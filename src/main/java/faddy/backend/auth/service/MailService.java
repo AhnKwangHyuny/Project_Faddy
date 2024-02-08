@@ -17,15 +17,15 @@ public class MailService {
     private final JavaMailSender emailSender;
 
     public void sendEmail(String toEmail,
-                          String title,
-                          String text) {
+                          String text,
+                          String title) {
         SimpleMailMessage emailForm = createEmailForm(toEmail, title, text);
         try {
             emailSender.send(emailForm);
         } catch (RuntimeException e) {
             log.debug("MailService.sendEmail exception occur toEmail: {}, " +
                     "title: {}, text: {}", toEmail, title, text);
-            throw new BusinessLogicException(ExceptionCode.UNABLE_TO_SEND_EMAIL);
+//            throw new BusinessLogicException(ExceptionCode.UNABLE_TO_SEND_EMAIL);
         }
     }
 

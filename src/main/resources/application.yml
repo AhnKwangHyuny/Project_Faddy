@@ -13,7 +13,9 @@ spring:
     jpa:
       hibernate:
         ddl-auto: update
-  mail: # google mail authentication initial setting
+
+  # google mail authentication initial setting
+  mail:
     host: smtp.gmail.com
     port: 587
     username: travelwithme.mail@gmail.com
@@ -29,3 +31,8 @@ spring:
           timeout: 5000
           writetimeout: 5000
     auth-code-expiration-millis: 300000  # 5분
+
+    #redis metadata
+    redis:
+      host: localhost
+      port: 6379
