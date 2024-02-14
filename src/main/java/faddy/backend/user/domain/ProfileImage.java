@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class ProfileImage extends Image {
 
 
-    @OneToOne(mappedBy = "user" )
-    private User user;
+//    @OneToOne(mappedBy = "profileImage" )
+//    private User user;
 
 }
