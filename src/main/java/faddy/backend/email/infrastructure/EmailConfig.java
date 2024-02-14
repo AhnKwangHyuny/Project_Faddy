@@ -50,7 +50,6 @@ public class EmailConfig {
     @Bean
     @Primary
     public JavaMailSender gmailMailSender() {
-
         return createMailSender(gmailHost, gmailPort , gmailUsername , gmailPassword);
     }
 

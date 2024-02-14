@@ -20,7 +20,7 @@ public class MailSendService {
     private JavaMailSender mailSender; // dafault injected bean is google mailsender
 
     @Autowired
-    RedisUtil redisUtil;
+    private RedisUtil redisUtil;
 
     private int authNumber;
 
@@ -61,7 +61,7 @@ public class MailSendService {
      */
     public String joinEmail(String email) {
         makeRandomNumber();
-        String setFrom = "agh0314@naver.com";
+        String setFrom = "agh0314@gmail.com";
         String toMail = email;
         String title = "회원 가입 인증 이메일 입니다.";
         String content =
@@ -70,6 +70,7 @@ public class MailSendService {
                         "인증 번호는 " + authNumber + "입니다." +
                         "<br>" +
                         "인증번호를 제대로 입력해주세요";
+
         mailSend(setFrom, toMail, title, content);
         return Integer.toString(authNumber);
     }
