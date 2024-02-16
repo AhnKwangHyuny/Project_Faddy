@@ -52,7 +52,7 @@ public class User extends BaseEntity {
     private String nickname;
 
     @Enumerated(value = STRING)
-    @Column(name = "user_level", length = 10, nullable = false , columnDefinition = "default 'LEVEL_1'")
+    @Column(name = "user_level", length = 10, nullable = false)
     private UserLevel userLevel = UserLevel.LEVEL_1;
 
     @Enumerated(value = STRING)
