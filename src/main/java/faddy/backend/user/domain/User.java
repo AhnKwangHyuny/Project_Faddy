@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
@@ -17,7 +16,6 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "users")
 @NoArgsConstructor(access = PROTECTED)
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
-@Where(clause = "status = 'ACTIVE'")
 public class User extends BaseEntity {
 
     @Id
@@ -39,8 +37,8 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user")
     private SocialLogin socialLogin;
 
-    @Column(name = "user_name", length = 128, unique = true, nullable = false)
-    private String userName;
+    @Column(name = "username", length = 128, unique = true, nullable = false)
+    private String username;
 
     @Column(name = "password_hash", length = 255, nullable = false)
     private String passwordHash;
@@ -80,7 +78,7 @@ public class User extends BaseEntity {
 
     public User(Profile profile, String userName, String passwordHash, String salt, String nickname, UserLevel userLevel, UserStatus status) {
         this.profile = profile;
-        this.userName = userName;
+        this.username = userName;
         this.passwordHash = passwordHash;
         this.salt = salt;
         this.nickname = nickname;

@@ -14,14 +14,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findById(Long id);
 
-    User save(User user);
+    /**
+     * 주어진 사용자 이름으로 사용자를 찾는 메소드.
+     * @param username 찾고자 하는 사용자의 이름.
+     * @return 이름이 일치하는 사용자를 Optional로 감싼 객체. 사용자가 없으면 Optional.empty()를 반환.
+     */
+    Optional<User> findByUsername(String username);
+
+    @Query("SELECT u.username FROM User u WHERE u.username = ?1")
+    Optional<String> findUsernameByUsername(String username);
+
 
     @Modifying
     @Query(
             """
-            UPDATE User user
-            SET user.status = 'DELETED'
-            WHERE user.id = :userId
+            UPDATE User user SET user.status = 'DELETED' WHERE user.id = :userId
             """
     )
     void deleteByUserId(@Param("userId") final Long userId);

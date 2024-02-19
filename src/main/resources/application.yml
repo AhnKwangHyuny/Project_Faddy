@@ -3,12 +3,16 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/faddy_db
+    url: jdbc:mysql://localhost:3306/faddy_db?serverTimezone=Asia/Seoul
     username: root
     password: agh@p970314
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: update
+        format_sql: true
 
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
@@ -59,3 +63,13 @@ naver:
         ssl:
           trust: smtp.naver.com
           protocols: TLSv1.2
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

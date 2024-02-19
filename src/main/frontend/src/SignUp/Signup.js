@@ -63,23 +63,62 @@ const onChangePasswordHandler = (e) => {
   }
 }
 
+/*
+ 아이디 유효성 검사
+ 1. 5~ 15자리의 영소문자 , 숫자 배합
+ 2. 적어도 1개 이상의 영어 대소문자와 숫자가 포함된 조합이어야함
+ 3. 특수문자 안됨
+*/
+const idCheckHandler = async (id) => {
+    const idRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{5,15}$/;
 
-  const handleIdSubmit = (e) => {
-    e.preventDefault();
-    // 아이디 유효성 검사를 수행합니다.
-  };
+    if (id === '') {
+      setIdError('아이디를 입력해주세요.');
+      setIsIdAvailable(false);
+      return false;
 
-  const handlePasswordSubmit = (e) => {
-    e.preventDefault();
-    // 패스워드 유효성 검사를 수행합니다.
-  };
+    } else if (!idRegex.test(id)) {
+      setIdError('아이디는 5~15자의 영소문자, 숫자만 입력 가능합니다.');
+      setIsIdAvailable(false);
+      return false;
+    }
 
-  const handleNicknameSubmit = (e) => {
-    e.preventDefault();
-    // 닉네임 유효성 검사를 수행합니다.
-    // 모든 정보를 서버로 전송합니다.
-    console.log(id, password, nickname);
-  };
+    try {
+      idDuplicationCheckAPI(id);
+
+//      if (responseData) {
+//        setIdError('사용 가능한 아이디입니다.');
+//        setIsIdCheck(true);
+//        setIsIdAvailable(true);
+//        return true;
+//      } else {
+//        setIdError('이미 사용중인 아이디입니다.');
+//        setIsIdAvailable(false);
+//        return false;
+//      }
+    } catch (error) {
+      alert('서버 오류입니다. 관리자에게 문의하세요.');
+      console.error(error);
+      return false;
+    }
+}
+
+const idDuplicationCheckAPI = async(userId) => {
+    let return_value;
+
+    await axios.post("http://localhost:9000/users/check-duplication" , {
+        userId : userId,
+    })
+    .then((response) => {
+        console.log(response);
+    })
+    .catch(function(error) {
+        console.log(error);
+
+    })
+
+}
+
 
   return (
     <Routes>
