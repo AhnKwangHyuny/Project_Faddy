@@ -32,6 +32,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'mysql:mysql-connector-java:8.0.26'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// spring email
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'

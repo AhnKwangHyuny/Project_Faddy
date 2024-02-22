@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RedisUtil {
 
     private final StringRedisTemplate redisTemplate;
@@ -56,4 +58,16 @@ public class RedisUtil {
     public void deleteData(String key){
         redisTemplate.delete(key);
     }
+
+    /**
+     * redis db에 값이 있는지 확인
+     *
+     * @param key   저장한 데이터의 키
+     * @Return 데이터 존재 유무 boolean 형식으로 리턴
+     */
+
+    public boolean checkExistsValue(final String key) {
+        return this.getData(key) != null;
+    }
+
 }

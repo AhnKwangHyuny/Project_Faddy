@@ -1,38 +1,27 @@
 //package faddy.backend.Email.service;
 //
-//import faddy.backend.email.service.MailSendService;
-//import org.junit.jupiter.api.BeforeEach;
+//import faddy.backend.email.service.MailService;
 //import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import org.springframework.mail.javamail.JavaMailSender;
-//import org.springframework.mail.javamail.MimeMessagePreparator;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+//import org.springframework.context.annotation.ComponentScan;
+//import org.springframework.test.context.TestPropertySource;
 //
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.times;
-//import static org.mockito.Mockito.verify;
+//import java.security.NoSuchAlgorithmException;
 //
 //
+//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2, replace = AutoConfigureTestDatabase.Replace.ANY)
+//@TestPropertySource("classpath:application.yml") //test용 properties 파일 설정
+//@ComponentScan(basePackages = "faddy.backend")
+//@DataJpaTest
 //public class MailSendServiceTest {
 //
-//    @Mock
-//    private JavaMailSender mailSender;
 //
-//    @InjectMocks
-//    private MailSendService mailSendService;
-//
-//    @BeforeEach
-//    public void setUp() {
-//        MockitoAnnotations.initMocks(this);
-//    }
 //
 //    @Test
-//    public void testJoinEmail() {
-//        String email = "agh0314@gmail.com";
+//    public void 인증코드_생성() throws NoSuchAlgorithmException {
 //
-//        mailSendService.joinEmail(email);
-//
-//        verify(mailSender, times(1)).send(any(MimeMessagePreparator.class));
 //    }
 //}

@@ -49,6 +49,9 @@ public class User extends BaseEntity {
     @Column(name = "nickname", length = 20, unique = true)
     private String nickname;
 
+    @Column(name = "email" , length =  128)
+    private String email;
+
     @Enumerated(value = STRING)
     @Column(name = "user_level", length = 10, nullable = false)
     private UserLevel userLevel = UserLevel.LEVEL_1;
