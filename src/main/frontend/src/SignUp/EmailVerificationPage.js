@@ -30,9 +30,6 @@ function RegistrationForm() {
 
   };
 
-
-
-
   return (
     <MainContainer>
       <Section>

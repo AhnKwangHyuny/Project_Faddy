@@ -5,6 +5,7 @@ import faddy.backend.global.api.Dto.SingleResponseDto;
 import faddy.backend.global.api.response.EmailVerificationResult;
 import faddy.backend.user.dto.request.EmailRequestDto;
 import faddy.backend.user.dto.request.EmailVerificationRequestDto;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.crypto.Cipher;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
 @Slf4j
@@ -23,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 public class EmailApiController {
 
     private final MailService mailService;
+
 
     @Autowired
     public EmailApiController(MailService mailService) {
@@ -35,14 +41,23 @@ public class EmailApiController {
      * @return 인증 결과를 담은 EmailVerificationResult 객체를 클라이언트에 반환
      */
     @PostMapping("/verifications")
-    public ResponseEntity verificationEmail(@RequestBody EmailVerificationRequestDto request) {
+    public ResponseEntity verificationEmail(@RequestBody EmailVerificationRequestDto request , HttpServletResponse response) throws NoSuchAlgorithmException {
 
         String email = request.getEmail();
         String code = request.getCode();
 
-        EmailVerificationResult response = mailService.verifiedCode(email, code);
+        EmailVerificationResult result = mailService.verifiedCode(email, code);
 
-        return new ResponseEntity<>(new SingleResponseDto<>(response), HttpStatus.OK);
+        if(result.getResult()) {
+            // 인증 성공 시 쿠기 생성
+            // HMAC-SHA512 암호화
+
+
+
+            //responseEntity에 쿠키 저장 후 클라이언트에 전송
+        }
+
+        return new ResponseEntity<>(new SingleResponseDto<>(result), HttpStatus.OK);
     }
 
     /**

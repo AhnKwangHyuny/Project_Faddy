@@ -29,6 +29,8 @@ spring:
     host: localhost
     port: 6379
 
+jwt:
+  secret: ZmFkZHkgaXMgYmVzdCBmYXNoaW9uIHNoYXJlIGNvbW11bml0eSEgcGxheSB0aGUgbXVzaWMhIO2MqOuUlOuKlCDrsqDsiqTtirjslbwh
 
 gmail:
   host: smtp.gmail.com

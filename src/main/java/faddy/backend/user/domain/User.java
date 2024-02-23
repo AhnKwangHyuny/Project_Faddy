@@ -59,6 +59,8 @@ public class User extends BaseEntity {
     @Enumerated(value = STRING)
     private UserStatus status;
 
+    @Enumerated(value = STRING)
+    private Authority authority;
 
 
     /*

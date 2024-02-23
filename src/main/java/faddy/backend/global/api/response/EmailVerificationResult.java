@@ -4,9 +4,10 @@ public class EmailVerificationResult {
 
     private final boolean result;
 
-    public EmailVerificationResult(boolean result) {
+    public  EmailVerificationResult(boolean result) {
         this.result = result;
     }
+
 
     // result 필드에 대한 getter 메소드
     public boolean getResult() {

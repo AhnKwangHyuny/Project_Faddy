@@ -73,3 +73,6 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+
+jwt:
+  secret: ZmFkZHkgaXMgYmVzdCBmYXNoaW9uIHNoYXJlIGNvbW11bml0eSEgcGxheSB0aGUgbXVzaWMhIO2MqOuUlOuKlCDrsqDsiqTtirjslbwh

@@ -7,6 +7,7 @@ public class SingleResponseDto<T> {
         this.body = body;
     }
 
+
     // body 필드에 대한 getter 메소드
     public T getbody() {
         return body;
