@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import OnTheBoard from "./OnTheBoard/OnTheBoard";
 import Login from "./Login/LoginForm"; // 로그인 페이지 컴포넌트를 import합니다.
-import Signup from "./SignUp/SignUp";
+import Signup from "./SignUp/Signup";
 
 function App() {
   return (

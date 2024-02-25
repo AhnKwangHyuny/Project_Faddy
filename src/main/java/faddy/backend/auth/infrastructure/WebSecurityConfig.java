@@ -1,9 +1,8 @@
 package faddy.backend.auth.infrastructure;
 
-import faddy.backend.auth.jwt.Service.TokenProvider;
-import faddy.backend.auth.jwt.infrastruture.JwtFilter;
+import faddy.backend.global.exception.FilterChainExceptionHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,14 +10,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig {
 
-    private final TokenProvider tokenProvider;
-
+    @Autowired
+    FilterChainExceptionHandler filterChainExceptionHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -29,6 +29,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http.addFilterBefore(filterChainExceptionHandler , UsernamePasswordAuthenticationFilter.class);
 
         //csrf disable
         http
@@ -45,7 +47,6 @@ public class WebSecurityConfig {
         //경로 권한 설정
         http
                 .authorizeHttpRequests((auth) -> auth
-                    .requestMatchers("/signup/**").authenticated()
                     .anyRequest().permitAll()
                 );
 

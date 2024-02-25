@@ -12,7 +12,7 @@ const SignUp = function () {
         <Route path="id" element={<IdInputForm />}/>
         <Route path="password" element={<PasswordInputForm />} />
         <Route path="nickname" element={<NicknameInputForm />} />
-        <Route path="emailVerification" element={<EmailVerificationForm />} />
+        <Route path="email/verifications" element={<EmailVerificationForm />} />
       </Routes>
     </SignupProvider>
   );
