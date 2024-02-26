@@ -30,7 +30,7 @@ public class RedisUtilTests {
         // 데이터 삭제
         redisUtil.deleteData(key);
 
-        // 데이터 조회 (삭제된 데이터이므로 null이어야 함)
+        // 데이터 조회
         assertNull(redisUtil.getData(key), "삭제된 데이터는 null이어야 합니다.");
     }
 }

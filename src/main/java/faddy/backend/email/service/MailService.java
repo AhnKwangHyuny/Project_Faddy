@@ -3,7 +3,10 @@ package faddy.backend.email.service;
 import faddy.backend.email.dto.AuthCodeMessage;
 import faddy.backend.global.Utils.RedisUtil;
 import faddy.backend.global.api.response.EmailVerificationResult;
+import faddy.backend.global.exception.BadRequestException;
+import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.user.repository.UserRepository;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
@@ -35,8 +38,6 @@ public class MailService {
     private final UserRepository userRepository;
 
     private static final String AUTH_CODE_PREFIX = "AuthCode";
-
-
 
 
     /**
@@ -183,7 +184,7 @@ public class MailService {
                 em -> {
                     // 중복 이메일 존재할 경우
                     log.debug("MemberServiceImpl.checkDuplicatedEmail exception occur email: {}", em);
-                    throw new IllegalArgumentException();
+                    throw new BadRequestException(ExceptionCode.DUPLICATE_EMAIL_MYSQL);
                 },
                 () -> {
                     // 중복 이메일 존재 하지 않음
@@ -216,5 +217,42 @@ public class MailService {
         return new EmailVerificationResult(authResult);
     }
 
+    /**
+     * @Param 중복 확인할 이메일
+     *
+     * @Return 이메일 중복 확인 시 : true , 중복된 이메일리 존재하지 않을 시 false 리턴
+     * */
 
+    @Transactional(readOnly = true)
+    public void checkDuplication(String email) {
+
+        if(email == null || this.isValidEmail(email) ) {
+            throw new BadRequestException(ExceptionCode.INVALID_EMAIL_FORMAT);
+        }
+
+        // redis에서 중복확인
+        checkDuplicationByRedis(email);
+
+        // mysql에서 중복 확인
+        checkDuplicationByDB(email);
+
+    }
+
+    @Transactional(readOnly = true)
+    private void checkDuplicationByRedis(@Email String email) {
+
+        if (redisUtil.hasKey(AUTH_CODE_PREFIX + email)) {
+            throw new BadRequestException(ExceptionCode.DUPLICATE_EMAIL_REDIS );
+        }
+
+    }
+
+    @Transactional(readOnly = true)
+    private void checkDuplicationByDB(@Email String email) {
+
+        if(userRepository.existsByEmail(email)) {
+            throw new BadRequestException(ExceptionCode.DUPLICATE_EMAIL_MYSQL );
+        }
+
+    }
 }

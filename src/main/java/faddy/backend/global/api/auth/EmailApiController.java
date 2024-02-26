@@ -1,5 +1,6 @@
 package faddy.backend.global.api.auth;
 
+import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
 import faddy.backend.global.api.Dto.SingleResponseDto;
 import faddy.backend.global.api.response.EmailVerificationResult;
@@ -9,7 +10,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +24,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController

@@ -70,4 +70,13 @@ public class RedisUtil {
         return this.getData(key) != null;
     }
 
+    /**
+     * Redis에서 지정된 키가 존재하는지 확인하는 메서드.
+     *
+     * @param key 확인할 키
+     * @return 키가 존재하면 true, 그렇지 않으면 false
+     */
+    public boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
 }

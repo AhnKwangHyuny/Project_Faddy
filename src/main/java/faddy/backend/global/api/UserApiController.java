@@ -1,22 +1,18 @@
 package faddy.backend.global.api;
 
+import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
-import faddy.backend.global.api.Dto.SingleResponseDto;
-import faddy.backend.global.api.response.EmailVerificationResult;
-import faddy.backend.user.dto.request.EmailRequestDto;
-import faddy.backend.user.dto.request.EmailVerificationRequestDto;
 import faddy.backend.user.repository.UserRepository;
 import faddy.backend.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +67,21 @@ public class UserApiController {
 
     }
 
+    // 이메일 중복 확인 요청
+    @PostMapping("/email/duplicates")
+    public ResponseEntity<?> checkDuplication(@RequestBody @Valid EmailDto emailDto) {
 
+        String email = emailDto.getEmail();
+        Map<String , Object>  response = new HashMap<>();
+
+        // 이메일 중복 확인
+        mailService.checkDuplication(email);
+
+        response.put("message" , "사용 가능한 이메일 입니다.");
+        response.put("isDuplicated", false);
+
+        return ResponseEntity.ok().body(response);
+    }
 
 
 }
