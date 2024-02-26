@@ -128,3 +128,15 @@ export const ProgressIndicator = styled.div`
   margin-top: 163px;
   align-self: center;
 `;
+
+export const ErrorMessage = styled.p`
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+`;
+
+export const Message = styled.p`
+  color: green;
+  font-size: 12px;
+  margin-top: 5px;
+`;
