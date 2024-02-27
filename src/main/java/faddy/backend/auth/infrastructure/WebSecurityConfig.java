@@ -27,8 +27,6 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-//        http.addFilterBefore(filterChainExceptionHandler , UsernamePasswordAuthenticationFilter.class);
-
         //csrf disable
         http
                 .csrf((auth) -> auth.disable());
