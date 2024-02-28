@@ -226,7 +226,7 @@ public class MailService {
     @Transactional(readOnly = true)
     public void checkDuplication(String email) {
 
-        if(email == null || this.isValidEmail(email) ) {
+        if(email == null || !this.isValidEmail(email) ) {
             throw new BadRequestException(ExceptionCode.INVALID_EMAIL_FORMAT);
         }
 
