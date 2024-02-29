@@ -76,3 +76,12 @@ logging:
 
 jwt:
   secret: ZmFkZHkgaXMgYmVzdCBmYXNoaW9uIHNoYXJlIGNvbW11bml0eSEgcGxheSB0aGUgbXVzaWMhIO2MqOuUlOuKlCDrsqDsiqTtirjslbwh
+
+
+#
+# API URL 관리
+#
+
+api:
+  auth: /api/auth/
+  user: /api/users/

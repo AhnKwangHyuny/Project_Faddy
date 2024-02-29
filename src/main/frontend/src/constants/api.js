@@ -1,5 +1,11 @@
 export const PROD = process.env.NODE_ENV === 'production';
 
+export const API_PATH = '/api';
+export const API_USER = '/api/users';
+export const API_AUTH = '/api/v1/auth';
+export const API_AUTH_CODE = '/api/v1/auth-codes'
+
+
 export const BASE_URL = PROD
   ? `${window.location.protocol}//${process.env.PROD_BASE_URL}`
   : 'http://localhost:3000';
@@ -10,17 +16,17 @@ export const AXIOS_BASE_URL = PROD
 
 export const END_POINTS = {
   USERS: '/users',
-  USER: function(userId) { return `/trips/${userId}`; },
 
-  // 중복확인 end point
-  CHECK_DUPLICATION: function(userInfo) {return `/api/users/check-duplication/${userInfo}`; }
-
-  //회원가입 end point
+  // API REQUEST URL
+  // email API
+  GET_EMAIL_AUTH_CODE: `${API_AUTH_CODE}`,
+  VERIFY_AUTH_CODE : `${API_AUTH_CODE}/verify`
 };
+
 
 export const NETWORK = {
   RETRY_COUNT: 2,
-  TIMEOUT: 5000,
+  TIMEOUT: 15000,
 };
 
 export const HTTP_STATUS_CODE = {

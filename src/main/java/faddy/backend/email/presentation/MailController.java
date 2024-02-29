@@ -6,6 +6,8 @@ import faddy.backend.email.dto.EmailCheckDto;
 import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
 import faddy.backend.global.api.Dto.SingleResponseDto;
+import faddy.backend.global.exception.BadRequestException;
+import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.user.repository.UserRepository;
 import faddy.backend.user.service.UserService;
 import jakarta.validation.Valid;
@@ -30,7 +32,7 @@ public class MailController {
             return "ok";
         }
         else{
-            throw new NullPointerException("뭔가 잘못!");
+            throw new BadRequestException(ExceptionCode.INVALID_REQUEST);
         }
     }
 

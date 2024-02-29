@@ -27,4 +27,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
 
     }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> handleAllExceptions(Exception ex) {
+        log.warn(ex.getMessage() , ex);
+
+        // 클라이언트에게 오류 메시지를 반환합니다.
+        return ResponseEntity.badRequest()
+                .body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value() , ex.getMessage()));
+    }
 }

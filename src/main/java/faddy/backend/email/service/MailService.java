@@ -2,14 +2,14 @@ package faddy.backend.email.service;
 
 import faddy.backend.email.dto.AuthCodeMessage;
 import faddy.backend.global.Utils.RedisUtil;
-import faddy.backend.global.api.response.EmailVerificationResult;
+import faddy.backend.global.api.response.AuthCodeVerificationResult;
 import faddy.backend.global.exception.BadRequestException;
 import faddy.backend.global.exception.ExceptionCode;
+import faddy.backend.global.exception.ServerProcessingException;
 import faddy.backend.user.repository.UserRepository;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -80,8 +80,8 @@ public class MailService {
 
 
 
-        } catch (MailException mailException){
-            mailException.printStackTrace();
+        } catch (Exception e){
+//            throw new
 
         }
 
@@ -202,19 +202,24 @@ public class MailService {
      *
      * @Return 인증 코드가 유효한 코드이며 인증 요청 시 이메일로 발송된 코드와 일치하는지 확인 후 result 객체 반환
      * */
-    public EmailVerificationResult verifiedCode(final String email , final String authCode) {
+    public AuthCodeVerificationResult verifiedCode(final String email , final String authCode) {
         this.checkDuplicatedEmail(email);
 
         String key = AUTH_CODE_PREFIX + email;
 
         String redisAuthCode = redisUtil.getData(key);
 
+        // redis key가 null이면 throw ServerError
+        if (redisAuthCode == null) {
+            throw new ServerProcessingException(ExceptionCode.TOKEN_GENERATION_ERROR);
+        }
+
         log.info("email : " + email + " code : " + authCode + "  redisAuthCode : " + redisAuthCode);
 
         boolean authResult = redisAuthCode != null && redisAuthCode.equals(authCode);
 
 
-        return new EmailVerificationResult(authResult);
+        return new AuthCodeVerificationResult(authResult);
     }
 
     /**

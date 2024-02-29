@@ -1,6 +1,5 @@
 package faddy.backend.user.service;
 
-import faddy.backend.global.api.response.EmailVerificationResult;
 import faddy.backend.global.Utils.RedisUtil;
 import faddy.backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -21,7 +21,23 @@ public enum ExceptionCode {
     /*
      * email
      * */
-    INVALID_EMAIL_FORMAT(5003 , "유효하지 않은 이메일 형식입니다.");
+    INVALID_EMAIL_FORMAT(5003 , "유효하지 않은 이메일 형식입니다."),
+
+
+    /* @@@ server exception : 6000~   @@@@*/
+
+    /*
+     * token & auth-code
+     * */
+    INVALID_TOKEN(6001, "유효하지 않은 토큰입니다."),
+    INVALID_AUTH_CODE(6002, "유효하지 않은 인증 코드 입니다."),
+    INVALID_EMAIL_AUTH_CODE(6003, "유효하지 않은 이메일 인증 코드 입니다."),
+    INVALID_PASSWORD_AUTH_CODE(6004, "유효하지 않은 비밀번호 인증 코드 입니다."),
+
+    /**
+     *  server resource creating error
+     * */
+    TOKEN_GENERATION_ERROR(6010 , "인증 코드 확인에 실패했습니다. 재요청 부탁드립니다.");
 
 
 

@@ -1,10 +1,10 @@
 package faddy.backend.global.api.response;
 
-public class EmailVerificationResult {
+public class AuthCodeVerificationResult {
 
     private final boolean result;
 
-    public  EmailVerificationResult(boolean result) {
+    public  AuthCodeVerificationResult(boolean result) {
         this.result = result;
     }
 

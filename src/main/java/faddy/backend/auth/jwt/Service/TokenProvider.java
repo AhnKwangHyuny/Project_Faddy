@@ -14,10 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,13 +31,14 @@ import java.util.stream.Collectors;
  */
 
 @Slf4j
-//@Component
+@Component
 public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;            // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
+    public static final long EMAIL_AUTH_CODE_EXPIRE_TIME = 1000 * 60 * 3 + 1000 * 15; // 3분 15초
 
     private final Key key;
 
@@ -123,4 +121,27 @@ public class TokenProvider {
             return e.getClaims();
         }
     }
+
+    /**
+     * 일반적인 인증 및 인가를 위한 JWT 토큰을 생성하는 메소드.
+     *
+     * @param subject 토큰의 주제 (일반적으로 사용자의 이메일 또는 ID).
+     * @param expirationTime 토큰의 만료 시간 (밀리초 단위).
+     * @param claims 토큰에 추가할 클레임 (메타데이터).
+     * @return 생성된 JWT 토큰.
+     */
+
+    public String generateToken(String subject, long expirationTime, Map<String, Object> claims) {
+        var jwtBuilder = Jwts.builder()
+                .setSubject(subject)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(key);
+
+        for (Map.Entry<String, Object> entry : claims.entrySet()) {
+            jwtBuilder.claim(entry.getKey(), entry.getValue());
+        }
+
+        return jwtBuilder.compact();
+    }
 }
+

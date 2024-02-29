@@ -3,14 +3,79 @@ import * as Style from "./style/tsf";
 import React, { useState } from 'react';
 import SignUpContext from "./SignUpContext";
 import axios from 'axios';
+import {getEmailAuthCode} from 'api/email/getEmailAuthCode';
+import {verifyAuthCodeAndRequestAuthToken} from 'api/auth/authTokenRequestAPI';
+
 
 function RegistrationForm() {
   // 상태변수 정의
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+
+  const [authCodeError , setAuthCodeError] = useState('');
+  const [authCodeMessage , setAuthCodeMessage] = useState('');
+
   const [isIdDuplicated, setIsIdDuplicated] = useState(false);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
+
   const [value , setValue] = useState('');
+  const [authCode , setAuthCode] = useState('');
+
+  /*
+  * 이메일 인증코드 요청 핸들러
+  */
+  const onEmailCodeRequest = (e) => {
+    const email = value;
+
+    if (!validateEmail(value)) {
+      alert('올바른 이메일 주소를 입력해주세요.');
+
+      const emailInput = document.getElementById('email');
+      emailInput.value = '';
+      emailInput.focus();
+    }
+
+    const response = getEmailAuthCode(email);
+
+    response.then((response) => {
+
+      console.log(response);
+
+      alert("이메일 인증 코드 발송 완료~ ");
+    })
+  }
+
+  /*
+  * 이메일 인증코드 확인 핸들러
+  */
+
+  const onAuthCodeVerificationHandler = () => {
+    const code = authCode;
+
+    console.log(authCode , typeof authCode , authCode.length);
+
+    // 만약 authCode가 6자리가 안되거나 문자열이 아닌 경우 버튼 비활성화 및 이벤트 종료
+    if (authCode.length !== 6 || typeof authCode !== 'string') {
+        alert('인증번호는 6자리 문자열이어야 합니다.');
+        return;
+    }
+
+     const data = {
+        code : authCode,
+        email : value
+     }
+
+    const response = verifyAuthCodeAndRequestAuthToken(data);
+
+    response.then()
+}
+
+
+
+  const onAuthCodeChange = (e) => {
+      setAuthCode(e.target.value);
+    };
 
   // 이메일 입력 핸들러를 정의합니다.
   const onChangeEmailHandler = (e) => {
@@ -53,6 +118,7 @@ function RegistrationForm() {
       if(!response.data.isDuplicated) {
         setIsEmailAvailable(true);
       }
+
     })
     .catch(function(error) {
       const response = error.response.data;
@@ -108,14 +174,32 @@ function RegistrationForm() {
 
         <DisplayMessage error={error} message={message} />
 
-        <Style.Button disabled = {!isEmailAvailable}>번호 받기</Style.Button>
-
-
-        <Style.Button>번호확인</Style.Button>
+        <Style.Button
+        type = "submit"
+        disabled = {!isEmailAvailable}
+        onClick = {onEmailCodeRequest}>번호 받기</Style.Button>
 
         <Style.VerificationTitle>인증번호 입력</Style.VerificationTitle>
-        <Style.Input placeholder="이메일에 전송된 인증번호 입력해주세요. (숫자 6자)" />
-      </Style.FormSection>
+
+        <Style.Input
+          type="text"
+          id='authCode'
+          name='authCode'
+          value={authCode}
+          onChange={onAuthCodeChange}
+          placeholder='해당 이메일로 발송된 인증번호 6자리를 눌러주세요.'
+          theme='underLine'
+          maxLength={6}
+        />
+
+        <DisplayMessage error={error} message={message} />
+
+        <Style.Button
+        type = "submit"
+        disabled={authCode.length !== 6}
+        onClick = {onAuthCodeVerificationHandler} > 번호 받기</Style.Button>
+
+        </Style.FormSection>
 
       <Style.VerifyButton disabled={!isEmailAvailable}>본인인증</Style.VerifyButton>
       <Style.ProgressIndicator />
