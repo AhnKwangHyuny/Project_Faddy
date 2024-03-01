@@ -6,6 +6,8 @@ import axios from 'axios';
 import {getEmailAuthCode} from 'api/email/getEmailAuthCode';
 import {verifyAuthCodeAndRequestAuthToken} from 'api/auth/authTokenRequestAPI';
 
+import Timer from 'util/Timer';
+
 
 function RegistrationForm() {
   // 상태변수 정의
@@ -26,6 +28,11 @@ function RegistrationForm() {
   * 이메일 인증코드 요청 핸들러
   */
   const onEmailCodeRequest = (e) => {
+
+    if(isButtonAvailable) {
+      alert("이미 인증번호 발급이 완료되었습니다.");
+    }
+
     const email = value;
 
     if (!validateEmail(value)) {
@@ -68,7 +75,10 @@ function RegistrationForm() {
 
     const response = verifyAuthCodeAndRequestAuthToken(data);
 
-    response.then()
+    response.then((response) => {
+      setAuthCodeMessage("인증이 완료되었습니다.");
+      setIsAvailable(true);
+    })
 }
 
 
@@ -192,16 +202,17 @@ function RegistrationForm() {
           maxLength={6}
         />
 
-        <DisplayMessage error={error} message={message} />
+
+        <DisplayMessage error={authCodeError} message={authCodeMessage} />
 
         <Style.Button
         type = "submit"
         disabled={authCode.length !== 6}
-        onClick = {onAuthCodeVerificationHandler} > 번호 받기</Style.Button>
+        onClick = {onAuthCodeVerificationHandler} >번호 확인</Style.Button>
 
         </Style.FormSection>
 
-      <Style.VerifyButton disabled={!isEmailAvailable}>본인인증</Style.VerifyButton>
+      <Style.VerifyButton disabled={!isAvailable}>회원가입 이동</Style.VerifyButton>
       <Style.ProgressIndicator />
     </Style.MainContainer>
   );
