@@ -17,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -94,7 +91,7 @@ public class AuthCodeApiController {
 
         String email = emailDto.getEmail();
 
-        if(email.isEmpty()) {
+        if(email.isEmpty() && mailService.isValidEmail(email)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -102,4 +99,30 @@ public class AuthCodeApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @ApiOperation(value = "인증 코드 삭제" , notes = "인증 시간 만료 시 db에 저장된 authcode 삭제")
+    @DeleteMapping("/auth-codes")
+    public ResponseEntity deleteAuthCode(@RequestBody EmailRequestDto emailDto) {
+
+        String email = emailDto.getEmail();
+
+        String key = mailService.createKey(email);
+
+        if(email.isEmpty() || !mailService.isValidEmail(email) || !redisUtil.hasKey(key) )  {
+
+            return ResponseEntity.badRequest().body(
+                    ResponseDto.response(
+                            "400",
+                            "유효한 이메일이 아닙니다. 확인 후 재 요청 부탁드립니다."
+                    )
+            );
+        }
+
+        redisUtil.deleteData(key);
+
+        return ResponseEntity.status(200)
+            .body(ResponseDto.response(
+                    "200",
+                    "정상적으로 삭제되었습니다."
+            ));
+    }
 }

@@ -10,6 +10,7 @@ import faddy.backend.user.repository.UserRepository;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Description;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -139,7 +140,7 @@ public class MailService {
         try{
             String key = AUTH_CODE_PREFIX + email;
 
-            redisUtil.setDataExpire(key, code ,60*3L); // {key,value} 3분동안 저장.
+            redisUtil.setDataExpire(key, code ,70*3L); // {key,value} 3분동안 저장.
 
             log.info("before verified authCode : " + redisUtil.getData(key) );
             return  code;
@@ -148,6 +149,29 @@ public class MailService {
             exception.printStackTrace();
             throw new IllegalArgumentException();
         }
+    }
+
+    @Transactional
+    private void deleteAuthCode(final String email ,final String code) {
+        try{
+            String key = AUTH_CODE_PREFIX + email;
+
+            if(redisUtil.hasKey(key)) {
+                redisUtil.deleteData(key);
+            }
+
+        }catch (Exception e){
+
+            log.warn("redis 인증 코드 삭제 중 어떠한 이유로 오류가 발생함. ");
+
+            throw e;
+
+        }
+    }
+
+    @Description("레디스 인증번호 value key 생성")
+    public String createKey(String email){
+        return AUTH_CODE_PREFIX + email;
     }
 
     /**

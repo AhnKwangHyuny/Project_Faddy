@@ -20,17 +20,23 @@ function RegistrationForm() {
   const [isIdDuplicated, setIsIdDuplicated] = useState(false);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
+  const [isButtonAvailable , setIsButtonAvailable] = useState(true);
+  const [isProcessing , setIsProcessing] = useState(false);
 
   const [value , setValue] = useState('');
+  const [email , setEmail] = useState('');
   const [authCode , setAuthCode] = useState('');
+
+  const [showTimer , setShowTimer] = useState(false);
 
   /*
   * 이메일 인증코드 요청 핸들러
   */
   const onEmailCodeRequest = (e) => {
 
-    if(isButtonAvailable) {
-      alert("이미 인증번호 발급이 완료되었습니다.");
+    if(isProcessing) {
+      alert("이미 해당 이메일로 인증번호 발급이 완료되었습니다.");
+      return;
     }
 
     const email = value;
@@ -41,6 +47,8 @@ function RegistrationForm() {
       const emailInput = document.getElementById('email');
       emailInput.value = '';
       emailInput.focus();
+
+      return;
     }
 
     const response = getEmailAuthCode(email);
@@ -48,6 +56,9 @@ function RegistrationForm() {
     response.then((response) => {
 
       console.log(response);
+
+      setIsProcessing(true);
+      setShowTimer(true);
 
       alert("이메일 인증 코드 발송 완료~ ");
     })
@@ -80,6 +91,18 @@ function RegistrationForm() {
       setIsAvailable(true);
     })
 }
+
+
+/*
+* 인증 시간 초과 시 서버에 저장한 email : authcode 삭제
+*/
+
+//const onTimerEnd = () => {
+//  if(validateEmail(email)) {
+//
+//  }
+//
+//};
 
 
 
@@ -142,6 +165,24 @@ function RegistrationForm() {
     });
   };
 
+  // useState 초기화
+  const resetState = () => {
+    setError('');
+    setMessage('');
+    setAuthCodeError('');
+    setAuthCodeMessage('');
+    setIsIdDuplicated(false);
+    setIsEmailAvailable(false);
+    setIsAvailable(false);
+    setIsButtonAvailable(true);
+    setIsProcessing(false);
+    setValue('');
+    setEmail('');
+    setAuthCode('');
+    setShowTimer(false);
+  };
+
+
   // 에러와 메시지를 표시하는 컴포넌트를 정의합니다.
   const DisplayMessage = ({ error, message }) => {
     console.log(error , message);
@@ -187,7 +228,7 @@ function RegistrationForm() {
         <Style.Button
         type = "submit"
         disabled = {!isEmailAvailable}
-        onClick = {onEmailCodeRequest}>번호 받기</Style.Button>
+        onClick = {onEmailCodeRequest}>번호 전송</Style.Button>
 
         <Style.VerificationTitle>인증번호 입력</Style.VerificationTitle>
 
@@ -205,12 +246,22 @@ function RegistrationForm() {
 
         <DisplayMessage error={authCodeError} message={authCodeMessage} />
 
+        {showTimer && <Timer initialSeconds={180} onTimerEnd={() => {
+
+          resetState();
+          alert("인증 시간이 완료되었습니다. 재 요청 부탁드립니다");
+
+
+
+        }} />}
+
         <Style.Button
         type = "submit"
         disabled={authCode.length !== 6}
         onClick = {onAuthCodeVerificationHandler} >번호 확인</Style.Button>
 
         </Style.FormSection>
+
 
       <Style.VerifyButton disabled={!isAvailable}>회원가입 이동</Style.VerifyButton>
       <Style.ProgressIndicator />

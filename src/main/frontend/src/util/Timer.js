@@ -10,28 +10,31 @@ const TimerText = styled.div`
   margin-top: 20px; /* 상단 여백 */
 `;
 
-function Timer({ initialSeconds }) {
+function Timer({ initialSeconds, onTimerEnd }) {
   const [seconds, setSeconds] = useState(initialSeconds);
 
-  useEffect(() => {
-    if (seconds > 0) {
-      const timerId = setTimeout(() => {
-        setSeconds(seconds - 1);
-      }, 1000);
+ useEffect(() => {
+   let timerId;
+   if (seconds > 0) {
+     timerId = setTimeout(() => {
+       setSeconds(seconds - 1);
+     }, 1000);
+   } else if (seconds === 0 && onTimerEnd) {
+     onTimerEnd();
+   }
 
-      return () => clearTimeout(timerId);
-    } else {
-      // 시간이 다 되었을 때 경고창 표시
-      alert('시간이 완료되었습니다. 다시 인증 부탁드립니다.');
-    }
-  }, [seconds]);
+   return () => {
+     clearTimeout(timerId);
+   };
+ }, [seconds, onTimerEnd]);
+
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
 
   return (
     <TimerText>
-      {seconds > 0 ? `${minutes}:${remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}` : '시간이 완료되었습니다.'}
+      {`${minutes}:${remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}`}
     </TimerText>
   );
 }
