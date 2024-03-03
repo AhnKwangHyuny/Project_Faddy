@@ -8,9 +8,10 @@ export const SignupProvider = ({ children }) => {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
+  const [email , setEmail] = useState('');
 
   return (
-    <SignupContext.Provider value={{id, setId, password, setPassword, nickname, setNickname}}>
+    <SignupContext.Provider value={{id, setId, password, setPassword, nickname, setNickname , email , setEmail}}>
       {children}
     </SignupContext.Provider>
 

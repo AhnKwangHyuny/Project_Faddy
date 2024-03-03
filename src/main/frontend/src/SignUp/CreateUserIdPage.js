@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import SignUpContext from "./SignUpContext";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { checkUserId } from 'api/user/UserVerificationAPI'
 
 
 function IdInputForm() {
@@ -15,43 +16,45 @@ function IdInputForm() {
   const [isIdDuplicated, setIsIdDuplicated] = useState(false); // 아이디 중복 검사를 했는지 안했는지
   const [isIdAvailable, setIsIdAvailable] = useState(false); // 아이디 사용 가능한지 아닌지
 
+  const [value , setValue] = useState('');
+
   const idInputRef = useRef();
   const navigate = useNavigate();
 
 
   const onChangeIdHandler = (e) => {
-    const idValue = e.target.value;
+    const id = e.target.value;
 
     // id 유효성 검사
-    idCheckHandler(idValue);
+    checkId(id);
+
+
   }
 
-  const idCheckHandler = async (id) => {
+  const checkId = async (id) => {
     const idRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{5,15}$/;
 
-    if (id === '') {
-      setIdError('아이디를 입력해주세요.');
-      setIsIdAvailable(false);
-      return false;
-
-    } else if (!idRegex.test(id)) {
+    if (userId === '' || !idRegex.test(id)) {
       setIdError('아이디는 5~15자의 영소문자, 숫자만 입력 가능합니다.');
       setIsIdAvailable(false);
       return false;
     }
 
-    try {
-      idDuplicationCheck(id); // 아이디 중복 검사
+     // 아이디 중복 검사
+     const result = checkUserId(userId);
 
-    } catch (error) {
-     console.error(error);
-       if (error.response && error.response.data && error.response.data.message) {
-         setIdError(error.response.data.message);
-       } else {
-         setIdError('서버 오류입니다. 관리자에게 문의하세요.');
-       }
-       return false;
-    }
+     result.then((res) => {
+       console.log(res);
+
+       setIsDuplicated(false);
+
+
+     })
+     .catch((err) => {
+
+     });
+
+
   }
 
   const idDuplicationCheck = async(userId) => {
@@ -107,7 +110,7 @@ function IdInputForm() {
         type="text"
         id='id'
         name='id'
-        value={id}
+        value={value}
         placeholder='아이디 입력'
         theme='underLine'
         maxLength={15}

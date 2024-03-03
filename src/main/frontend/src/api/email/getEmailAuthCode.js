@@ -12,7 +12,6 @@ export const getEmailAuthCode = async(email) => {
     // 응답 헤더 파싱
     const headers = response.headers;
 
-    console.log(headers);
 
     console.log(response);
 

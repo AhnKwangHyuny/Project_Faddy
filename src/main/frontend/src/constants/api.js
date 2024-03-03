@@ -1,7 +1,7 @@
 export const PROD = process.env.NODE_ENV === 'production';
 
 export const API_PATH = '/api';
-export const API_USER = '/api/users';
+export const API_USER = '/api/v1/users';
 export const API_AUTH = '/api/v1/auth';
 export const API_AUTH_CODE = '/api/v1/auth-codes'
 
@@ -20,7 +20,11 @@ export const END_POINTS = {
   // API REQUEST URL
   // email API
   GET_EMAIL_AUTH_CODE: `${API_AUTH_CODE}`,
-  VERIFY_AUTH_CODE : `${API_AUTH_CODE}/verify`
+  VERIFY_AUTH_CODE : `${API_AUTH_CODE}/verify`,
+  DELETE_AUTH_CODE : `${API_AUTH_CODE}`,
+
+  //USER API
+  CHECK_USER_ID : `${API_USER}/check-duplication/userId`
 };
 
 

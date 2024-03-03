@@ -12,9 +12,12 @@ export const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  // 토큰을 얻는 방법은 애플리케이션에 따라 다릅니다.
-  // 일반적으로 토큰은 로그인 후에 얻어지며, 로컬 스토리지나 쿠키, 또는 상태 관리 라이브러리에 저장됩니다.
 
+  const token = localStorage.getItem("authToken");
+
+  if(token) {
+    config.headers.Authorization = token;
+  }
 
   return config;
 }, handleAPIError);

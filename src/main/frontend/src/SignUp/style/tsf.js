@@ -106,7 +106,7 @@ export const VerificationTitle = styled.h3`
 export const VerifyButton = styled.button`
   align-items: center;
   border-radius: 32px;
-  background-color: #000;
+  background-color: ${props => props.disabled ? 'transparent' : '#000'};
   color: #fff;
   text-align: center;
   padding: 19px 60px;
@@ -117,7 +117,9 @@ export const VerifyButton = styled.button`
   max-width: 327px;
   width: 100%;
   cursor: pointer;
+  opacity: ${props => props.disabled ? '0.5' : '1'};
 `;
+
 
 export const ProgressIndicator = styled.div`
   border-radius: 2.5px;

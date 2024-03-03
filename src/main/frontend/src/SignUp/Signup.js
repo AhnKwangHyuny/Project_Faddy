@@ -1,16 +1,19 @@
 import { SignupProvider } from './SignUpContext';
-import IdInputForm from './CreateIdPage';
+import IdInputForm from './CreateUserIdPage';
 import PasswordInputForm from './CreatePasswordPage';
 import NicknameInputForm from './CreateNicknamePage';
 import EmailVerificationForm from './EmailVerificationPage';
-import { BrowserRouter as Router, Route, useNavigate, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, useNavigate, Routes , useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
 const SignUp = function () {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    navigate('email/verifications');
+    if (location.pathname === '/signup') {
+        navigate('email/verifications');
+      }
   }, [navigate]);
 
   return (
