@@ -19,4 +19,8 @@ public class EmailRequestDto {
     @Email(regexp = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:gmail.com|naver.com)$")
     @NotEmpty(message = "이메일을 입력해 주세요")
     private String email;
+
+    public String getEmail() {
+        return this.email;
+    }
 }

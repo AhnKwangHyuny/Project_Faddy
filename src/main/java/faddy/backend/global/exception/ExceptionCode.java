@@ -12,6 +12,13 @@ public enum ExceptionCode {
     NOT_FOUND_TRIP_ITEM_ID(1003, "요청한 ID에 해당하는 여행 아이템이 존재하지 않습니다."),
     NOT_FOUND_EXPENSE_ID(1004, "요청한 ID에 해당하는 금액이 존재하지 않습니다."),
 
+    /**
+     * @Return User info request exception : 4000~ 5000
+     * */
+
+    INVALID_USER_ID (4001 , "유효하지 않은 아이디 입니다. "),
+    DUPLICATED_USER_ID(4002 , "이미 사용 중인 아이디가 존재합니다."),
+
     /*
     * DB ACCESS ERROR
     * */
@@ -22,6 +29,8 @@ public enum ExceptionCode {
      * email
      * */
     INVALID_EMAIL_FORMAT(5003 , "유효하지 않은 이메일 형식입니다."),
+
+
 
 
     /* @@@ server exception : 6000~   @@@@*/

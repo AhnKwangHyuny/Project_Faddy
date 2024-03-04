@@ -2,7 +2,9 @@ package faddy.backend.global.api;
 
 import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
+import faddy.backend.global.api.Dto.ResponseDto;
 import faddy.backend.global.exception.BadRequestException;
+import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.ExceptionResponse;
 import faddy.backend.user.repository.UserRepository;
 import faddy.backend.user.service.UserService;
@@ -17,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserApiController {
 
     private final UserRepository userRepository;
@@ -45,8 +47,8 @@ public class UserApiController {
      * @param user 사용자 이름을 포함하는 User 객체.
      * @return 중복 시 true , 사용 가능할 경우 false를 클라이언트에 반환
      */
-    @PostMapping("/check-duplication")
-    public ResponseEntity<?> checkUserIdDuplication(@RequestBody Map<String , String> user) {
+    @PostMapping("/check-duplication/userId")
+    public ResponseEntity<ResponseDto> checkUserIdDuplication(@RequestBody Map<String , String> user) {
 
         log.info(user.toString());
 
@@ -55,23 +57,21 @@ public class UserApiController {
 
         // 사용자 아이다가 없거나 null 인경우 http code 400 반환 (request error)
         if(userId == null || userId.isEmpty()) {
-            response.put("message" , "유저 아이디는 필수 입니다. (아이디 입력 안됨)");
-            response.put("isDuplicated" , true);
 
-            return ResponseEntity.badRequest().body(response);
+            throw new BadRequestException(ExceptionCode.INVALID_USER_ID);
         }
 
         if(userService.isUserIdDuplicated(userId)) {
-            response.put("message" , "중복된 아이디가 존재합니다.");
-            response.put("isDuplicated" , true);
-
-            return ResponseEntity.ok().body(response);
+            throw new BadRequestException(ExceptionCode.DUPLICATED_USER_ID);
         }
 
-        response.put("message" , "사용 가능한 아이디입니다.");
-        response.put("isDuplicated" , false);
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(
+                ResponseDto.response(
+                        "200",
+                        "사용 가능한 아이디 입니다."
+                )
+        );
 
     }
 

@@ -89,6 +89,7 @@ public class AuthCodeApiController {
     @PostMapping("/auth-codes")
     public ResponseEntity sendMessage(@RequestBody EmailRequestDto emailDto) throws NoSuchAlgorithmException {
 
+
         String email = emailDto.getEmail();
 
         if(email.isEmpty() && mailService.isValidEmail(email)) {
@@ -102,6 +103,8 @@ public class AuthCodeApiController {
     @ApiOperation(value = "인증 코드 삭제" , notes = "인증 시간 만료 시 db에 저장된 authcode 삭제")
     @DeleteMapping("/auth-codes")
     public ResponseEntity deleteAuthCode(@RequestBody EmailRequestDto emailDto) {
+
+        log.info("emailDto : " + emailDto.getEmail());
 
         String email = emailDto.getEmail();
 
