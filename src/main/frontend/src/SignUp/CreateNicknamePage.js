@@ -1,55 +1,75 @@
 import React, { useState , useEffect , useContext , useRef } from 'react';
 import * as Style from ".././Common/SignUpStyle";
 import { Link } from 'react-router-dom';
-import SignUpContext from "./SignUpContext";
+import SignupContext from "./SignUpContext";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import {validateNickname} from 'utils/Validate';
+
+import {getNicknameValidationResponse} from 'api/user/UserVerificationAPI';
 
 function NicknameInputForm() {
 
+    const {id , password , email} = useContext(SignupContext);
 
-    const {nickname , setNickname} = useContext(SignUpContext);
+    // 닉네임 컴포넌트 마운트 시 id , password ,email이 정의되어 있지 않다면 회원가입 초기 화면으로 리다이렉트
+
+
+    const {nickname , setNickname} = useContext(SignupContext);
+    const [value , setValue] = useState('');
+
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
-    const [isIdDuplicated, setIsIdDuplicated] = useState(false);
-    const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
 
-    const nicknameRef = useRef();
-    const navigate = useNavigate();
+    const [isAvailable , setIsAvailable] = useState(false);
 
     const onChangeNicknameHandler = (e) => {
-        const value = e.target.value;
+        const name = e.target.value;
+        setValue(name);
 
-        if(value.trim() === "") { // 닉네임 공백이면 서버 요청 x
+        if(name.trim() === '') {
+            setError('');
+            setMessage('');
+
             return;
         }
 
-        // nickname 중복 검사
-        isNicknameDuplicateCheck(value);
-    }
+        if(!validateNickname(name)) {
+            setError("3~12자리 사이 닉네임을 입력해주세요.");
 
-    const isNicknameDuplicateCheck = async(nickname) => {
-        await axios.post("http://localhost:9000/users/check-duplication/nickname" , {
-            nickname : nickname
-        })
-        .then((response) => {
+            return false;
+        }
+
+        // nickname 중복 검사
+        const result = getNicknameValidationResponse(value);
+
+        result.then((response) => {
             console.log(response);
 
-            if(response?.data?.isDuplicated == null || response.data.message == null) {
-                setError("잘못된 요청입니다.");
-                return;
+            if(response?.data?.responseCode !== "200") {
+                setError("유효하지 않은 닉네임입니다.");
+                setIsAvailable(false);
+
             }
 
-            setIsNicknameAvailable(!response.data.isDuplicated);
-            setMessage(response.data.message);
+            setError('');
+            setNickname(value);
+            setMessage(response.data.responseMessage);
+
+            setIsAvailable(true);
 
         })
-        .catch(function(error) {
-            console.log(error);
-            setError("요청 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
-        })
+        .catch((err) => {
+            console.log(err);
+
+            setIsAvailable(false);
+        });
+
+
     }
+
+
 
     const DisplayMessage = ({ error , message }) => {
         if (error) {
@@ -62,11 +82,11 @@ function NicknameInputForm() {
 
     const onFormSubmit = (event) => {
         event.preventDefault();
-        const nickname = nicknameRef.current.value;
-        setNickname(nickname);
 
-        console.log(nickname);
+        //useContext(SignupContext) 에 id , password , email이 모두 들어있는지 확인
 
+        // 없으면 누락된 회원정보가 있습니다. 말한 후 쿠키 삭제 후 이메일 인증 페이로 리다이렉트
+        // 전부 존재한다면 서버에 유저 회원가입 요청
 
     };
 
@@ -76,12 +96,11 @@ function NicknameInputForm() {
             <Style.Instruction>닉네임을 입력해주세요.</Style.Instruction>
 
             <Style.InputField
-                ref = {nicknameRef}
                 onChange={onChangeNicknameHandler}
                 type="text"
                 id='nickname'
                 name='nickname'
-                value={nickname}
+                value={value}
                 placeholder="닉네임 입력"
                 theme='underLine'
                 maxLength={15}
@@ -94,11 +113,23 @@ function NicknameInputForm() {
                 <Style.ProgressBar />
             </Style.ProgressSection>
 
-            <Style.NextButton type = "submit" disabled={isNicknameAvailable} >다음</Style.NextButton>
+            <Style.NextButton type = "submit" disabled={!isAvailable} >다음</Style.NextButton>
 
             <Style.FooterIndicator />
         </form>
     );
+}
+
+function redirectInitPage(id , password , email) {
+
+    const navigate = useNavigate();
+
+       if (!id || !password || !email) {
+           navigate('email/verifications');
+        }
+
+
+
 }
 
 export default NicknameInputForm;

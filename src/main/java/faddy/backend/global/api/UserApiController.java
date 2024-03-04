@@ -8,6 +8,7 @@ import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.ExceptionResponse;
 import faddy.backend.user.repository.UserRepository;
 import faddy.backend.user.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,34 +43,27 @@ public class UserApiController {
     }
 
 
-    /**
-     * 사용자 이름의 중복 여부를 확인하는 메소드.
-     * @param user 사용자 이름을 포함하는 User 객체.
-     * @return 중복 시 true , 사용 가능할 경우 false를 클라이언트에 반환
-     */
-    @PostMapping("/check-duplication/userId")
-    public ResponseEntity<ResponseDto> checkUserIdDuplication(@RequestBody Map<String , String> user) {
+    @ApiOperation(value = "유저 정보 중복확인 " , notes = "회원가입 시 입력된 유저 정보에 중복 여부 확인 ")
+    @PostMapping("/check-duplication/{field}")
+    public ResponseEntity<ResponseDto> checkDuplication(@PathVariable("field") @Valid String field, @RequestBody Map<String , String> user) {
 
-        log.info(user.toString());
-
-        Map<String , Object> response = new HashMap<>();
-        String userId = user.get("userId");
+        String value = user.get(field);
 
         // 사용자 아이다가 없거나 null 인경우 http code 400 반환 (request error)
-        if(userId == null || userId.isEmpty()) {
+        if(value == null || value.isEmpty()) {
 
-            throw new BadRequestException(ExceptionCode.INVALID_USER_ID);
+            throw new BadRequestException(ExceptionCode.INVALID_INPUT_DATA);
         }
 
-        if(userService.isUserIdDuplicated(userId)) {
-            throw new BadRequestException(ExceptionCode.DUPLICATED_USER_ID);
+        if(userService.isUserIdDuplicated(field , value)) {
+            throw new BadRequestException(ExceptionCode.DUPLICATED_INPUT_DATA);
         }
 
 
         return ResponseEntity.ok().body(
                 ResponseDto.response(
                         "200",
-                        "사용 가능한 아이디 입니다."
+                        "사용 가능한 " + field + " 입니다."
                 )
         );
 

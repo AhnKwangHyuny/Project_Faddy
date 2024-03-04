@@ -22,19 +22,14 @@ public class UserService {
 
     private final RedisUtil redisUtil;
 
-    public boolean isUserIdDuplicated(final String userId) {
+    public boolean isUserIdDuplicated(final String field , final String value) {
 
-        boolean isDuplicated;
-
-        String username = userRepository.findUsernameByUsername(userId).orElse(null);
-
-        log.info("username = " + username );
-
-        isDuplicated = username != null;
-
-        return isDuplicated;
+        return switch (field) {
+            case "userId" -> userRepository.findUsernameByUsername(value).isPresent();
+            case "nickname" -> userRepository.findNicknameByNickname(value).isPresent();
+            default -> throw new IllegalArgumentException("Invalid field: " + field);
+        };
     }
-
 
 
 }

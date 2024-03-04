@@ -1,6 +1,8 @@
 import {axiosInstance} from '../axiosInstance.js';
 import { END_POINTS } from '../../constants/api';
-import {ValidateUserId} from 'util/Validate';
+import {ValidateUserId , validateNickname} from 'utils/Validate';
+
+
 
 export const checkUserId = async (userId) => {
 
@@ -14,6 +16,17 @@ export const checkUserId = async (userId) => {
     };
 
     const response = await axiosInstance.post(END_POINTS.CHECK_USER_ID , data);
+
+    return response;
+}
+
+export const getNicknameValidationResponse = async (nickname) => {
+
+        const data = {
+            'nickname': nickname
+        };
+
+        const response = await axiosInstance.post(END_POINTS.CHECK_USER_NICKNAME , data);
 
     return response;
 }

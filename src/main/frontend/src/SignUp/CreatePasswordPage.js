@@ -24,6 +24,14 @@ function PasswordInputForm() {
 
         const password = event.target.value;
 
+        if(password === '') {
+            setError('');
+            setMessage('');
+
+            setValue('');
+            return false;
+        }
+
         setValue(password);
 
         if(password == "") {
@@ -54,8 +62,12 @@ function PasswordInputForm() {
 
             setReError('');
             setReMessage("비밀번호가 일치합니다.");
+
+            setIsAvailable(true);
+
         } else {
             setReError("비밀번호가 일치하지 않습니다.");
+            setIsAvailable(false);
         }
     };
 
@@ -67,6 +79,9 @@ function PasswordInputForm() {
 
     const onFormSubmit = (event) => {
         event.preventDefault();
+
+        setPassword(value);
+
         navigate('/signUp/nickname');
     };
 
@@ -116,6 +131,7 @@ function PasswordInputForm() {
             <Style.ProgressSection>
                 <Style.ProgressBar/>
             </Style.ProgressSection>
+
 
             <Style.NextButton disabled={!isAvailable} type = "submit"> 다음 </Style.NextButton>
 

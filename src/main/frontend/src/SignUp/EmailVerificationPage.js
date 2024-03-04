@@ -10,7 +10,7 @@ import {
 } from "api/auth/authTokenRequestAPI";
 import { useNavigate } from 'react-router-dom';
 
-import Timer from "util/Timer";
+import Timer from "utils/Timer";
 
 function RegistrationForm() {
   // 상태변수 정의

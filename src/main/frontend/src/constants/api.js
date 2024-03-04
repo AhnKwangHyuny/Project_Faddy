@@ -25,7 +25,8 @@ export const END_POINTS = {
 
 
   //USER API
-  CHECK_USER_ID : `${API_USER}/check-duplication/userId`
+  CHECK_USER_ID : `${API_USER}/check-duplication/userId`,
+  CHECK_USER_NICKNAME :`${API_USER}/check-duplication/nickname`
 };
 
 
