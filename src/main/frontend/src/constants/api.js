@@ -23,6 +23,7 @@ export const END_POINTS = {
   VERIFY_AUTH_CODE : `${API_AUTH_CODE}/verify`,
   DELETE_AUTH_CODE : `${API_AUTH_CODE}`,
 
+
   //USER API
   CHECK_USER_ID : `${API_USER}/check-duplication/userId`
 };

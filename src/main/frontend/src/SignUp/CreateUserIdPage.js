@@ -16,25 +16,24 @@ function IdInputForm() {
   const [isIdDuplicated, setIsIdDuplicated] = useState(false); // 아이디 중복 검사를 했는지 안했는지
   const [isIdAvailable, setIsIdAvailable] = useState(false); // 아이디 사용 가능한지 아닌지
 
-  const [value , setValue] = useState('');
-
   const idInputRef = useRef();
   const navigate = useNavigate();
 
 
   const onChangeIdHandler = (e) => {
-    const id = e.target.value;
+    const userId = e.target.value;
 
+    setId(userId);
     // id 유효성 검사
-    checkId(id);
+    checkId(userId);
 
 
   }
 
-  const checkId = async (id) => {
+  const checkId = async (userId) => {
     const idRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{5,15}$/;
 
-    if (userId === '' || !idRegex.test(id)) {
+    if (userId === '' || !idRegex.test(userId)) {
       setIdError('아이디는 5~15자의 영소문자, 숫자만 입력 가능합니다.');
       setIsIdAvailable(false);
       return false;
@@ -46,12 +45,19 @@ function IdInputForm() {
      result.then((res) => {
        console.log(res);
 
-       setIsDuplicated(false);
+       setIdError('');
+       setIdMessage(res.data.responseMessage);
+
+       setIsIdDuplicated(false);
+       setIsIdAvailable(true);
 
 
      })
      .catch((err) => {
 
+        setIdError(err.data.responseMessage);
+
+        setIsIdDuplicated(true);
      });
 
 
@@ -92,11 +98,13 @@ function IdInputForm() {
   const onFormSubmit = (event) => {
     event.preventDefault();
     const id = idInputRef.current.value;
-    setId(id);
     console.log(id);
 
     // history.push()를 사용하여 원하는 URL로 라우팅합니다.
-    navigate('/signUp/password');
+    if(isIdAvailable) {
+        navigate('/signUp/password');
+    }
+
 
   };
 
@@ -110,7 +118,7 @@ function IdInputForm() {
         type="text"
         id='id'
         name='id'
-        value={value}
+        value={id}
         placeholder='아이디 입력'
         theme='underLine'
         maxLength={15}
@@ -126,7 +134,7 @@ function IdInputForm() {
     </Style.ProgressSection>
 
     <form onSubmit = {onFormSubmit}>
-      <Style.NextButton disabled={isIdAvailable} type = "submit"> 다음 </Style.NextButton>
+      <Style.NextButton disabled={!isIdAvailable} type = "submit"> 다음 </Style.NextButton>
     </form>
 
     <Style.FooterIndicator />

@@ -54,19 +54,19 @@ export const ProgressBar = styled.div`
 
 export const NextButton = styled.button`
   align-items: center;
-  border-radius: 32px;
-  background-color: #000;
-  margin-top: 25px;
-  width: 100%;
-  max-width: 327px;
-  justify-content: center;
-  color: #fff;
-  white-space: nowrap;
-  text-align: center;
-  letter-spacing: 0.1px;
-  padding: 19px 60px;
-  font: 700 15px Inter, sans-serif;
-  cursor: pointer;
+    border-radius: 32px;
+    background-color: ${props => props.disabled ? 'transparent' : '#000'};
+    color: #fff;
+    text-align: center;
+    padding: 19px 60px;
+    font-weight: 700;
+    font-size: 15px;
+    font-family: Inter, sans-serif;
+    margin-top: 87px;
+    max-width: 327px;
+    width: 100%;
+    cursor: pointer;
+    opacity: ${props => props.disabled ? '0.5' : '1'};
 
   &:hover {
     background-color: #333;
