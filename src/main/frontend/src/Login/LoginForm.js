@@ -31,7 +31,7 @@ function LoginForm() {
         </ProviderContainer>
         <Signup>
           아직 회원이 아니신가요?{" "}
-          <SignupLink><Link to="/signup/main">회원가입</Link></SignupLink>{" "}
+          <SignupLink><Link to="/signup">회원가입</Link></SignupLink>{" "}
         </Signup>
       </Content>
     </Container>

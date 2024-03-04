@@ -39,7 +39,6 @@ function PasswordInputForm() {
         }
 
         const isValid = isValidPassword(password);
-        console.log(isValid);
 
         if(isValid) {
             setPassword(password);
@@ -56,8 +55,7 @@ function PasswordInputForm() {
         const newRePassword = e.target.value;
 
         setRePassword(newRePassword);
-        console.log(password , newRePassword);
-        console.log(password === newRePassword && isValidPassword(newRePassword));
+
         if (password === newRePassword && isValidPassword(newRePassword)) {
 
             setReError('');
@@ -82,7 +80,7 @@ function PasswordInputForm() {
 
         setPassword(value);
 
-        navigate('/signUp/nickname');
+        navigate('/signup/nickname');
     };
 
     const DisplayMessage = ({ error, message }) => { // message or error 출력

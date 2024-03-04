@@ -54,7 +54,7 @@ public class AuthCodeApiController {
                 claims.put("email", email);
 
                 // jwt 인증 토큰 생성
-                token = tokenProvider.generateToken("emailAuthentication", TokenProvider.EMAIL_AUTH_CODE_EXPIRE_TIME, claims);
+                token = tokenProvider.generateToken("emailAuthentication", TokenProvider.USER_JOIN_EXPIRE_TIME, claims);
 
             }
             log.info("token : " + token);

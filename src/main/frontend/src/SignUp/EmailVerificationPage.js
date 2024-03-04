@@ -1,7 +1,7 @@
 // 필요한 모듈과 컴포넌트를 import합니다.
 import * as Style from "./style/tsf";
-import React, { useState } from "react";
-import SignUpContext from "./SignUpContext";
+import React, { useState , useContext , useEffect } from "react";
+import SignupContext from "./SignUpContext";
 import axios from "axios";
 import { getEmailAuthCode } from "api/email/getEmailAuthCode";
 import {
@@ -10,10 +10,13 @@ import {
 } from "api/auth/authTokenRequestAPI";
 import { useNavigate } from 'react-router-dom';
 
+
 import Timer from "utils/Timer";
 
 function RegistrationForm() {
   // 상태변수 정의
+  const {email ,setEmail} =  useContext(SignupContext);
+
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -27,12 +30,13 @@ function RegistrationForm() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [value, setValue] = useState("");
-  const [email, setEmail] = useState("");
   const [authCode, setAuthCode] = useState("");
 
   const [showTimer, setShowTimer] = useState(false);
 
   const navigate = useNavigate();
+
+
   /*
    * 이메일 인증코드 요청 핸들러
    */
@@ -57,7 +61,6 @@ function RegistrationForm() {
     const response = getEmailAuthCode(email);
 
     response.then((response) => {
-      console.log(response);
 
       setIsProcessing(true);
       setShowTimer(true);
@@ -94,12 +97,19 @@ function RegistrationForm() {
         // response header의 authentication 토큰을 클라이언트 로컬 스토리지에 저장
 
         // 토큰을 추출
-        const token = res.headers.authorization;
+        const token = res.headers.authentication;
 
         // 토큰이 null이거나 공백인지 확인
         if (!token || token.trim() === '') {
-          alert('토큰이 없습니다. 로그인을 해주세요.');
-          return;
+          alert('접근 가능 권한이 없습니다. 지속적으로 같은 오류 발생 시 자사에 문의 부탁드립니다.');
+
+          const emailData = {
+            email : data.get('email')
+          }
+
+          deleteAuthCode(emailData);
+
+          navigate("/");
         }
 
         // 토큰을 로컬 스토리지에 저장
@@ -113,8 +123,10 @@ function RegistrationForm() {
 
         response
           .then( (res) => {
-            console.log(res);
+
             alert(authCodeMessage);
+
+            setEmail(value);
 
             // 다른 컴포넌트로 redirect
             navigate('/signup/id');
@@ -172,7 +184,6 @@ function RegistrationForm() {
       checkEmailDuplication(value);
     }
 
-    console.log(value);
     setValue(value);
   };
 
@@ -185,19 +196,16 @@ function RegistrationForm() {
   // 이메일 중복 검사 함수를 정의합니다.
   const checkEmailDuplication = async (email) => {
     await axios
-      .post("http://localhost:9000/api/users/email/duplicates", {
+      .post("http://localhost:9000/api/v1/users/email/duplicates", {
         email: email,
       })
       .then((response) => {
-        console.log(response.data);
-
-        if (
-          response?.data?.isDuplicated == null ||
-          response.data.message == null
-        ) {
+        if ( response?.data?.isDuplicated == null || response.data.message == null)
+        {
           setError("잘못된 요청입니다.");
           return;
         }
+
         setError("");
         setMessage(response.data.message);
 
@@ -206,10 +214,11 @@ function RegistrationForm() {
         }
       })
       .catch(function (error) {
-        const response = error.response.data;
 
-        if (response.code === 5003) {
-          setError(response.message);
+        const response = error.response;
+
+        if (response.data.code === 5003) {
+          setError(response.data.message);
           setMessage("");
         }
 

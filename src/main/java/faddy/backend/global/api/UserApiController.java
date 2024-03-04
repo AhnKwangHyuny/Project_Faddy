@@ -77,10 +77,7 @@ public class UserApiController {
         Map<String , Object>  response = new HashMap<>();
 
         // 이메일 중복 확인
-
         mailService.checkDuplication(email);
-
-
 
         response.put("message" , "사용 가능한 이메일 입니다.");
         response.put("isDuplicated", false);

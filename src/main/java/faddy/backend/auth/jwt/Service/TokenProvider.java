@@ -40,6 +40,8 @@ public class TokenProvider {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
     public static final long EMAIL_AUTH_CODE_EXPIRE_TIME = 1000 * 60 * 3 + 1000 * 15; // 3분 15초
 
+    public static final long USER_JOIN_EXPIRE_TIME = 1000 * 60 * 30;
+
     private final Key key;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey) {

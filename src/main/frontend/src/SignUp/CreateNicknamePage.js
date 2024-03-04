@@ -12,9 +12,17 @@ import {getNicknameValidationResponse} from 'api/user/UserVerificationAPI';
 function NicknameInputForm() {
 
     const {id , password , email} = useContext(SignupContext);
+    const navigate = useNavigate();
 
     // 닉네임 컴포넌트 마운트 시 id , password ,email이 정의되어 있지 않다면 회원가입 초기 화면으로 리다이렉트
+    useEffect(() => {
+        if (!id || !password || !email) {
 
+            alert("잘못된 접근입니다.");
+
+            navigate('/signup/email/verifications');
+        }
+    }, [id, password, email, navigate]);
 
     const {nickname , setNickname} = useContext(SignupContext);
     const [value , setValue] = useState('');
@@ -118,18 +126,6 @@ function NicknameInputForm() {
             <Style.FooterIndicator />
         </form>
     );
-}
-
-function redirectInitPage(id , password , email) {
-
-    const navigate = useNavigate();
-
-       if (!id || !password || !email) {
-           navigate('email/verifications');
-        }
-
-
-
 }
 
 export default NicknameInputForm;
