@@ -1,5 +1,5 @@
 import React, { useState , useContext } from 'react';
-import * as Style from ".././Common/SignUpStyle";
+import * as Style from "Common/SignUpStyle";
 import { useNavigate } from 'react-router-dom';
 import SignupContext from "./SignUpContext";
 

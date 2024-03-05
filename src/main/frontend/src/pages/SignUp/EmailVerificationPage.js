@@ -1,21 +1,37 @@
 // 필요한 모듈과 컴포넌트를 import합니다.
 import * as Style from "./style/tsf";
-import React, { useState , useContext , useEffect } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect
+} from "react";
 import SignupContext from "./SignUpContext";
 import axios from "axios";
-import { getEmailAuthCode } from "api/email/getEmailAuthCode";
+import {
+  getEmailAuthCode
+} from "api/email/getEmailAuthCode";
 import {
   verifyAuthCodeAndRequestAuthToken,
   deleteAuthCode,
 } from "api/auth/authTokenRequestAPI";
-import { useNavigate } from 'react-router-dom';
+import {
+  useNavigate
+} from 'react-router-dom';
+
+import {
+  axiosInstance
+} from 'api/axiosInstance';
+
 
 
 import Timer from "utils/Timer";
 
 function RegistrationForm() {
   // 상태변수 정의
-  const {email ,setEmail} =  useContext(SignupContext);
+  const {
+    email,
+    setEmail
+  } = useContext(SignupContext);
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -104,7 +120,7 @@ function RegistrationForm() {
           alert('접근 가능 권한이 없습니다. 지속적으로 같은 오류 발생 시 자사에 문의 부탁드립니다.');
 
           const emailData = {
-            email : data.get('email')
+            email: data.get('email')
           }
 
           deleteAuthCode(emailData);
@@ -116,13 +132,13 @@ function RegistrationForm() {
         localStorage.setItem('authToken', token);
 
         const data = {
-          'email' : value,
+          'email': value,
         }
 
         const response = deleteAuthCode(data);
 
         response
-          .then( (res) => {
+          .then((res) => {
 
             alert(authCodeMessage);
 
@@ -195,13 +211,13 @@ function RegistrationForm() {
 
   // 이메일 중복 검사 함수를 정의합니다.
   const checkEmailDuplication = async (email) => {
-    await axios
-      .post("http://localhost:9000/api/v1/users/email/duplicates", {
+    await axiosInstance
+      .post("/api/v1/users/email/duplicates", {
         email: email,
       })
       .then((response) => {
-        if ( response?.data?.isDuplicated == null || response.data.message == null)
-        {
+
+        if (response?.data?.isDuplicated == null || response.data.message == null) {
           setError("잘못된 요청입니다.");
           return;
         }
@@ -213,8 +229,8 @@ function RegistrationForm() {
           setIsEmailAvailable(true);
         }
       })
-      .catch(function (error) {
-
+      .catch(function(error) {
+        console.log(error);
         const response = error.response;
 
         if (response.data.code === 5003) {
@@ -244,112 +260,166 @@ function RegistrationForm() {
   };
 
   // 에러와 메시지를 표시하는 컴포넌트를 정의합니다.
-  const DisplayMessage = ({ error, message }) => {
+  const DisplayMessage = ({
+    error,
+    message
+  }) => {
 
     if (error) {
-      return <Style.ErrorMessage>{error}</Style.ErrorMessage>;
+      return < Style.ErrorMessage > {
+        error
+      } < /Style.ErrorMessage>;
     } else if (message) {
-      return <Style.Message>{message}</Style.Message>;
+      return < Style.Message > {
+        message
+      } < /Style.Message>;
     }
     return null;
   };
 
   // RegistrationForm 컴포넌트의 렌더링 내용을 정의합니다.
-  return (
-    <Style.MainContainer>
-      <Style.Section>
-        <Style.SectionHeader>
-          <Style.Icon
-            loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/cb443ed5e5fad0a5a243fa3140cdf82a96fd899f2e94e9517abfeabceaf9429a?apiKey=a65641faa3d54339891445c030384eb2&"
-            alt="Sign Up"
-          />
-          <Style.Title>회원가입</Style.Title>
-        </Style.SectionHeader>
-        <Style.Description>
-          가입 절차를 위해 아래 절차 동의를 눌러주시고 본인인증을 진행해주세요.
-        </Style.Description>
-      </Style.Section>
-      <Style.FormSection>
-        <Style.Instruction>
-          <Style.InstructionTitle>이메일 인증</Style.InstructionTitle>
+  return ( <
+    Style.MainContainer >
+    <
+    Style.Section >
+    <
+    Style.SectionHeader >
+    <
+    Style.Icon loading = "lazy"
+    src = "https://cdn.builder.io/api/v1/image/assets/TEMP/cb443ed5e5fad0a5a243fa3140cdf82a96fd899f2e94e9517abfeabceaf9429a?apiKey=a65641faa3d54339891445c030384eb2&"
+    alt = "Sign Up" /
+    >
+    <
+    Style.Title > 회원가입 < /Style.Title> <
+    /Style.SectionHeader> <
+    Style.Description >
+    가입 절차를 위해 아래 절차 동의를 눌러주시고 본인인증을 진행해주세요. <
+    /Style.Description> <
+    /Style.Section> <
+    Style.FormSection >
+    <
+    Style.Instruction >
+    <
+    Style.InstructionTitle > 이메일 인증 < /Style.InstructionTitle>
 
-          <Style.Input
-            onChange={onChangeEmailHandler}
-            type="email"
-            id="email"
-            name="email"
-            value={value}
-            placeholder="이메일 입력(naver , google)"
-            theme="underLine"
-            maxLength={30}
-          />
-        </Style.Instruction>
+    <
+    Style.Input onChange = {
+      onChangeEmailHandler
+    }
+    type = "email"
+    id = "email"
+    name = "email"
+    value = {
+      value
+    }
+    placeholder = "이메일 입력(naver , google)"
+    theme = "underLine"
+    maxLength = {
+      30
+    }
+    /> <
+    /Style.Instruction>
 
-        <DisplayMessage error={error} message={message} />
+    <
+    DisplayMessage error = {
+      error
+    }
+    message = {
+      message
+    }
+    />
 
-        <Style.Button
-          type="submit"
-          disabled={!isEmailAvailable}
-          onClick={onEmailCodeRequest}
-        >
-          번호 전송
-        </Style.Button>
+    <
+    Style.Button type = "submit"
+    disabled = {
+      !isEmailAvailable
+    }
+    onClick = {
+      onEmailCodeRequest
+    } >
+    번호 전송 <
+    /Style.Button>
 
-        <Style.VerificationTitle>인증번호 입력</Style.VerificationTitle>
+    <
+    Style.VerificationTitle > 인증번호 입력 < /Style.VerificationTitle>
 
-        <Style.Input
-          type="text"
-          id="authCode"
-          name="authCode"
-          value={authCode}
-          onChange={onAuthCodeChange}
-          placeholder="해당 이메일로 발송된 인증번호 6자리를 눌러주세요."
-          theme="underLine"
-          maxLength={6}
+    <
+    Style.Input type = "text"
+    id = "authCode"
+    name = "authCode"
+    value = {
+      authCode
+    }
+    onChange = {
+      onAuthCodeChange
+    }
+    placeholder = "해당 이메일로 발송된 인증번호 6자리를 눌러주세요."
+    theme = "underLine"
+    maxLength = {
+      6
+    }
+    />
+
+    <
+    DisplayMessage error = {
+      authCodeError
+    }
+    message = {
+      authCodeMessage
+    }
+    />
+
+    {
+      showTimer && ( <
+        Timer initialSeconds = {
+          180
+        }
+        onTimerEnd = {
+          () => {
+            resetState();
+
+            const data = {
+              email: value,
+            };
+            console.log(data);
+            const result = deleteAuthCode(data);
+
+            result
+              .then((response) => {
+                console.log(response);
+                alert("인증 시간이 초과했습니다. 다시 인증 부탁드립니다. ");
+              })
+              .catch((err) => {
+                console.log(err);
+                alert(
+                  "인증 요청 중 오류가 발생했습니다. 다시 인증 부탁드립니다. "
+                );
+              });
+          }
+        }
         />
+      )
+    }
 
-        <DisplayMessage error={authCodeError} message={authCodeMessage} />
+    <
+    Style.VerifyButton type = "submit"
+    disabled = {
+      !isAvailable
+    }
+    disabled = {
+      authCode.length !== 6
+    }
+    onClick = {
+      onAuthCodeVerificationHandler
+    } >
+    인증 확인 <
+    /Style.VerifyButton> <
+    /Style.FormSection>
 
-        {showTimer && (
-          <Timer
-            initialSeconds={180}
-            onTimerEnd={() => {
-              resetState();
-
-              const data = {
-                email: value,
-              };
-              console.log(data);
-              const result = deleteAuthCode(data);
-
-              result
-                .then((response) => {
-                  console.log(response);
-                  alert("인증 시간이 초과했습니다. 다시 인증 부탁드립니다. ");
-                })
-                .catch((err) => {
-                  console.log(err);
-                  alert(
-                    "인증 요청 중 오류가 발생했습니다. 다시 인증 부탁드립니다. "
-                  );
-                });
-            }}
-          />
-        )}
-
-        <Style.VerifyButton
-          type="submit"
-          disabled={!isAvailable}
-          disabled={authCode.length !== 6}
-          onClick={onAuthCodeVerificationHandler}
-        >
-          인증 확인
-        </Style.VerifyButton>
-      </Style.FormSection>
-
-      <Style.ProgressIndicator />
-    </Style.MainContainer>
+    <
+    Style.ProgressIndicator / >
+    <
+    /Style.MainContainer>
   );
 }
 

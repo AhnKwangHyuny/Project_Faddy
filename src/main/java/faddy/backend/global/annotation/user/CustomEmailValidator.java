@@ -1,4 +1,4 @@
-package faddy.backend.annotation;
+package faddy.backend.global.annotation.user;
 
 
 import jakarta.validation.ConstraintValidator;

@@ -1,18 +1,12 @@
 package faddy.backend.email.presentation;
 
 
-import faddy.backend.annotation.CustomEmail;
 import faddy.backend.email.dto.EmailCheckDto;
-import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
-import faddy.backend.global.api.Dto.SingleResponseDto;
 import faddy.backend.global.exception.BadRequestException;
 import faddy.backend.global.exception.ExceptionCode;
-import faddy.backend.user.repository.UserRepository;
-import faddy.backend.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

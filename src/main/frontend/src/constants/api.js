@@ -1,18 +1,21 @@
 export const PROD = process.env.NODE_ENV === 'production';
+export const DEV = process.env.NODE_ENV === 'development';
 
 export const API_PATH = '/api';
 export const API_USER = '/api/v1/users';
 export const API_AUTH = '/api/v1/auth';
 export const API_AUTH_CODE = '/api/v1/auth-codes'
 
+export const BASE_URL = DEV
+  ? 'http://172.30.1.84:3000'
+  : `${window.location.protocol};//${process.env.AXIOS_PROD_BASE_URL}`
 
-export const BASE_URL = PROD
-  ? `${window.location.protocol}//${process.env.PROD_BASE_URL}`
-  : 'http://localhost:3000';
 
-export const AXIOS_BASE_URL = PROD
-  ? `${window.location.protocol}//${process.env.AXIOS_PROD_BASE_URL}`
-  : 'http://localhost:3000';
+export const AXIOS_BASE_URL = DEV
+  ? 'http://172.30.1.84:3000'
+  : `${window.location.protocol};//${process.env.AXIOS_PROD_BASE_URL}`
+
+
 
 export const END_POINTS = {
   USERS: '/users',
@@ -26,7 +29,10 @@ export const END_POINTS = {
 
   //USER API
   CHECK_USER_ID : `${API_USER}/check-duplication/userId`,
-  CHECK_USER_NICKNAME :`${API_USER}/check-duplication/nickname`
+  CHECK_USER_NICKNAME :`${API_USER}/check-duplication/nickname`,
+
+  //SIGN UP API
+  SIGN_UP : `${API_USER}`,
 };
 
 

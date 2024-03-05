@@ -1,6 +1,6 @@
 package faddy.backend.user.dto.request;
 
-import faddy.backend.annotation.CustomEmail;
+import faddy.backend.global.annotation.user.CustomEmail;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

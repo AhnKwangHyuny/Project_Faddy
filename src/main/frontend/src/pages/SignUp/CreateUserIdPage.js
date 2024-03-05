@@ -1,5 +1,5 @@
 import React, { useState , useEffect , useContext , useRef } from 'react';
-import * as Style from ".././Common/SignUpStyle";
+import * as Style from "Common/SignUpStyle";
 import { Link } from 'react-router-dom';
 import SignUpContext from "./SignUpContext";
 import axios from 'axios';
