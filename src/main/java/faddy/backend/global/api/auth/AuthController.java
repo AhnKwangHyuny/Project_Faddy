@@ -1,4 +1,5 @@
-package faddy.backend.global.api;
+package faddy.backend.global.api.auth;
+
 
 import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
@@ -6,7 +7,6 @@ import faddy.backend.global.api.Dto.ResponseDto;
 import faddy.backend.global.exception.BadRequestException;
 import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.ExceptionResponse;
-import faddy.backend.user.repository.UserRepository;
 import faddy.backend.user.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
@@ -18,20 +18,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @RestController
-@RequestMapping("/api/v1/users")
-public class UserApiController {
+@Slf4j
+@RequestMapping("/api/v1/auths")
+public class AuthController {
 
-    private final UserRepository userRepository;
-    private final UserService userService;
     private final MailService mailService;
 
+    private final UserService userService;
     @Autowired
-    public UserApiController(UserRepository userRepository, UserService userService, MailService mailService) {
-        this.userRepository = userRepository;
-        this.userService = userService;
+    public AuthController(MailService mailService , UserService userService) {
         this.mailService = mailService;
+        this.userService = userService;
     }
 
     @ExceptionHandler(BadRequestException.class)
@@ -41,7 +39,6 @@ public class UserApiController {
         return ResponseEntity.badRequest()
                 .body(new ExceptionResponse(e.getCode() , e.getMessage() ));
     }
-
 
     @ApiOperation(value = "유저 정보 중복확인 " , notes = "회원가입 시 입력된 유저 정보에 중복 여부 확인 ")
     @PostMapping("/check-duplication/{field}")
@@ -71,7 +68,7 @@ public class UserApiController {
 
     // 이메일 중복 확인 요청
     @PostMapping("/email/duplicates")
-    public ResponseEntity<?> checkDuplication(@RequestBody @Valid EmailDto emailDto) {
+    public ResponseEntity<?> checkEmailDuplication(@RequestBody @Valid EmailDto emailDto) {
 
         String email = emailDto.getEmail();
         Map<String , Object>  response = new HashMap<>();

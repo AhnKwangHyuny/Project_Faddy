@@ -37,4 +37,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value() , ex.getMessage()));
     }
+
+
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<ExceptionResponse> handleValidationExceptions(MethodArgumentNotValidException e) {
+//        log.warn(e.getMessage() , e);
+//
+//        return ResponseEntity.badRequest()
+//                .body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+//
+//    }
+    // server error
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<ExceptionResponse> handleInternalServerException(final InternalServerException e) {
+        log.warn(e.getMessage() , e);
+
+        return ResponseEntity.badRequest()
+                .body(new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+
+    }
 }
+

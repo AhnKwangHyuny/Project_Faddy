@@ -17,7 +17,6 @@ public class DBAccessTimeTraceAopTest {
 
         //given
         Profile profile = new Profile("defaultProfile");
-        User user = new User(profile , "ahn" , "dwq" ,  "dwq" , "dwqdwq" , UserLevel.LEVEL_1 , UserStatus.ACTIVE);
 
 
         //when

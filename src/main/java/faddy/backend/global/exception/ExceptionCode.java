@@ -13,6 +13,12 @@ public enum ExceptionCode {
     NOT_FOUND_EXPENSE_ID(1004, "요청한 ID에 해당하는 금액이 존재하지 않습니다."),
 
     /**
+    * @Return enttiy exception
+    *
+    * */
+    NOT_SAVE_USER(3000 , "회원가입 처리 중 서버 오류가 발생했습니다. 잠시 후 다시 시도 부탁드립니다."),
+
+    /**
      * @Return User info request exception : 4000~ 5000
      * */
     INVALID_INPUT_DATA(4001 , "유효하지 않은 데이터입니다."),

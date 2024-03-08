@@ -1,21 +1,23 @@
 import { axiosInstance } from 'api/axiosInstance';
 
-export async function signup(id, password, nickname, email) {
+export async function signup(fields) {
+
+  const { username, password, nickname, email } = fields;
 
   try {
-    const response = await axiosInstance.post('/api/v1/users/signup', {
-      id,
+    const response = await axiosInstance.post('/api/v1/users', {
+      username,
       password,
       nickname,
       email,
     });
 
     // 회원가입 성공 처리
-    // 예: 로그인 페이지로 리디렉션
+
     return response;
   } catch (error) {
 
-    // Error 로직
+    console.warn(error);
 
     throw error;
   }

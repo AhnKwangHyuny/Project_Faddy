@@ -1,20 +1,20 @@
 export const PROD = process.env.NODE_ENV === 'production';
 export const DEV = process.env.NODE_ENV === 'development';
 
+export const DEVICE = process.env.NODE_DEVICE  === 'DESKTOP';
+
 export const API_PATH = '/api';
 export const API_USER = '/api/v1/users';
 export const API_AUTH = '/api/v1/auth';
 export const API_AUTH_CODE = '/api/v1/auth-codes'
 
 export const BASE_URL = DEV
-  ? 'http://172.30.1.84:3000'
+  ? DEVICE ? 'http://localhost:9000' : 'http://172.30.1.58:9000'
   : `${window.location.protocol};//${process.env.AXIOS_PROD_BASE_URL}`
-
 
 export const AXIOS_BASE_URL = DEV
-  ? 'http://172.30.1.84:3000'
+  ? DEVICE ? 'http://localhost:9000' : 'http://172.30.1.58:9000'
   : `${window.location.protocol};//${process.env.AXIOS_PROD_BASE_URL}`
-
 
 
 export const END_POINTS = {

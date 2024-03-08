@@ -26,8 +26,8 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
-public class AuthCodeApiController {
+@RequestMapping("/api/v1/auth-codes")
+public class AuthCodeController {
 
     private final MailService mailService;
     private final RedisUtil redisUtil;
@@ -37,7 +37,7 @@ public class AuthCodeApiController {
     private final String AUTHENTICATION = "Authentication" ;
 
     @ApiOperation(value = "인증 코드 검증", notes = "이 API 엔드포인트는 사용자가 제공한 인증 코드를 검증 후 유효하면 인증토큰을 생성해 딜리버리 한다.")
-    @PostMapping("/auth-codes/verify")
+    @PostMapping("/verify")
     public ResponseEntity verifyAuthCode(@RequestBody @Valid AuthCodeAndEmailDto request , HttpServletResponse response) throws NoSuchAlgorithmException {
 
         String email = request.getEmail();
@@ -57,7 +57,6 @@ public class AuthCodeApiController {
                 token = tokenProvider.generateToken("emailAuthentication", TokenProvider.USER_JOIN_EXPIRE_TIME, claims);
 
             }
-            log.info("token : " + token);
 
         } catch (Exception e) {
             throw new ServerProcessingException(ExceptionCode.TOKEN_GENERATION_ERROR);
@@ -71,12 +70,18 @@ public class AuthCodeApiController {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHENTICATION , BEARER + token);
 
+        Map<String, String> data = new HashMap<>();
+        data.put("authentication", BEARER + token);
+
+
         return ResponseEntity.status(200)
                 .headers(headers)
                 .body(ResponseDto.response(
                    "200",
-                   "인증토큰 발급이 완료되었습니다."
-                ));
+                   "인증토큰 발급이 완료되었습니다.",
+                    data
+                    )
+                );
     }
 
     /**
@@ -86,13 +91,13 @@ public class AuthCodeApiController {
      */
 
     @ApiOperation(value = "인증 코드 발송", notes = "이 API 엔드포인트는 클라이언트가 요청한 이메일을 검증하고 인증 코드를 발송한다.")
-    @PostMapping("/auth-codes")
+    @PostMapping
     public ResponseEntity sendMessage(@RequestBody EmailRequestDto emailDto) throws NoSuchAlgorithmException {
 
 
         String email = emailDto.getEmail();
 
-        if(email.isEmpty() && mailService.isValidEmail(email)) {
+        if(email.isEmpty() || !mailService.isValidEmail(email)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
@@ -101,7 +106,7 @@ public class AuthCodeApiController {
     }
 
     @ApiOperation(value = "인증 코드 삭제" , notes = "인증 시간 만료 시 db에 저장된 authcode 삭제")
-    @DeleteMapping("/auth-codes")
+    @DeleteMapping
     public ResponseEntity deleteAuthCode(@RequestBody EmailRequestDto emailDto) {
 
         log.info("emailDto : " + emailDto.getEmail());

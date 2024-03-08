@@ -18,6 +18,13 @@ import static lombok.AccessLevel.PROTECTED;
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
 public class User extends BaseEntity {
 
+    public User(String username, String password, String nickname, String email) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.email = email;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false)
@@ -40,21 +47,19 @@ public class User extends BaseEntity {
     @Column(name = "username", length = 128, unique = true, nullable = false)
     private String username;
 
-    @Column(name = "password_hash", length = 255, nullable = false)
-    private String passwordHash;
+    @Column(name = "password", length = 255, nullable = false)
+    private String password;
 
-    @Column(name = "salt", length = 128, nullable = false)
-    private String salt;
 
-    @Column(name = "nickname", length = 20, unique = true)
+    @Column(name = "nickname", length = 20, unique = true , nullable = false)
     private String nickname;
 
-    @Column(name = "email" , length =  128)
+    @Column(name = "email" , length =  255 , unique = true , nullable = false)
     private String email;
 
-    @Enumerated(value = STRING)
-    @Column(name = "user_level", length = 10, nullable = false)
-    private UserLevel userLevel = UserLevel.LEVEL_1;
+//    @Enumerated(value = STRING)
+//    @Column(name = "user_level", length = 10, nullable = false)
+//    private UserLevel userLevel = UserLevel.LEVEL_1;
 
     @Enumerated(value = STRING)
     private UserStatus status;
@@ -63,31 +68,52 @@ public class User extends BaseEntity {
     private Authority authority;
 
 
-    /*
-    *  @@ social login일 때 생성자
-    * */
-//    public User(final Long id, final String socialLoginId, final String nickname, final String imageUrl) {
-//        this.id = id;
-//        this.socialLoginId = socialLoginId;
-//        this.nickname = nickname;
-//        this.lastLoginDate = LocalDateTime.now();
-//        this.imageUrl = imageUrl;
-//        this.status = ACTIVE;
-//        this.createdAt = LocalDateTime.now();
-//        this.modifiedAt = LocalDateTime.now();
-//    }
-
-    /*
-     *  @@ 일반 회원가입 유저 생성자
+    /**
+     * @Param entity method
      * */
 
-    public User(Profile profile, String userName, String passwordHash, String salt, String nickname, UserLevel userLevel, UserStatus status) {
+    public User(Profile profile, String username, String password, String nickname , String email) {
         this.profile = profile;
-        this.username = userName;
-        this.passwordHash = passwordHash;
-        this.salt = salt;
+        this.username = username;
+        this.password = password;
         this.nickname = nickname;
-        this.userLevel = userLevel;
-        this.status = status;
+        this.email = email;
     }
+
+    // test builder
+    public static class Builder {
+        private String username;
+        private String nickname;
+
+        private String password;
+
+        private String email;
+
+        public Builder withUsername(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder withPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder withNickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        public Builder withEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+
+        public User build() {
+            return new User(username, password , nickname, email);
+        }
+    }
+
+
 }

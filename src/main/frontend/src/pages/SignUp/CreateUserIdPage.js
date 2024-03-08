@@ -9,7 +9,7 @@ import { checkUserId } from 'api/user/UserVerificationAPI'
 
 function IdInputForm() {
 
-  const {id, setId} = useContext(SignUpContext);
+  const {username, setUsername} = useContext(SignUpContext);
 
   const [idError, setIdError] = useState('');
   const [idMessage, setIdMessage] = useState('');
@@ -23,7 +23,7 @@ function IdInputForm() {
   const onChangeIdHandler = (e) => {
     const userId = e.target.value;
 
-    setId(userId);
+    setUsername(userId);
     // id 유효성 검사
     checkId(userId);
 
@@ -43,8 +43,6 @@ function IdInputForm() {
      const result = checkUserId(userId);
 
      result.then((res) => {
-       console.log(res);
-
        setIdError('');
        setIdMessage(res.data.responseMessage);
 
@@ -98,7 +96,6 @@ function IdInputForm() {
   const onFormSubmit = (event) => {
     event.preventDefault();
     const id = idInputRef.current.value;
-    console.log(id);
 
     // history.push()를 사용하여 원하는 URL로 라우팅합니다.
     if(isIdAvailable) {
@@ -118,7 +115,7 @@ function IdInputForm() {
         type="text"
         id='id'
         name='id'
-        value={id}
+        value={username}
         placeholder='아이디 입력'
         theme='underLine'
         maxLength={15}
