@@ -2,7 +2,7 @@ package faddy.backend.user.presentation;
 
 import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
-import faddy.backend.global.api.Dto.ResponseDto;
+import faddy.backend.api.Dto.ResponseDto;
 import faddy.backend.global.exception.BadRequestException;
 import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.ExceptionResponse;
@@ -13,7 +13,6 @@ import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -95,7 +94,6 @@ public class UserController {
     }
 
 
-
     @ApiOperation(value = "유저 정보 중복확인 " , notes = "회원가입 시 입력된 유저 정보에 중복 여부 확인 ")
     @PostMapping("/check-duplication/{field}")
     public ResponseEntity<ResponseDto> checkDuplication(@PathVariable("field") @Valid String field, @RequestBody Map<String , String> user) {
@@ -122,7 +120,12 @@ public class UserController {
 
     }
 
+    @ApiOperation(value = "유저 로그인 유효성 검사" , notes = "로그인 요청 시, 아이디와 패스워드를 확인하고 토큰을 생성하여 반환")
+    @PostMapping("/login")
+    public ResponseEntity<ResponseDto> login( @RequestBody Map<String , String> user) {
 
+
+    }
 
 
 }

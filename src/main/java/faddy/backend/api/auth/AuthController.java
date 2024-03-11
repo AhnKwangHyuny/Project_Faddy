@@ -1,9 +1,9 @@
-package faddy.backend.global.api.auth;
+package faddy.backend.api.auth;
 
 
+import faddy.backend.api.Dto.ResponseDto;
 import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
-import faddy.backend.global.api.Dto.ResponseDto;
 import faddy.backend.global.exception.BadRequestException;
 import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.ExceptionResponse;

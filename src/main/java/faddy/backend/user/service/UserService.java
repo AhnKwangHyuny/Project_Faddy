@@ -47,7 +47,6 @@ public class UserService {
         };
     }
 
-
     @Transactional
     public Optional<String> joinUser(@Valid final SignupInfoDto info) {
 

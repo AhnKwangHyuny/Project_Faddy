@@ -1,9 +1,7 @@
-package faddy.backend.global.api.Dto;
+package faddy.backend.api.Dto;
 
 
 import lombok.*;
-
-import javax.xml.transform.Result;
 
 @Getter
 @Builder

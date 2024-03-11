@@ -58,8 +58,13 @@ public enum ExceptionCode {
     /**
      *  server resource creating error
      * */
-    TOKEN_GENERATION_ERROR(6010 , "인증 코드 확인에 실패했습니다. 재요청 부탁드립니다.");
+    TOKEN_GENERATION_ERROR(6010 , "인증 코드 확인에 실패했습니다. 재요청 부탁드립니다."),
 
+    /**
+     *  authentication , authorization exception error
+     * */
+    AUTHENTICATION_ERROR(8001 , "사용자 인증에 실패했습니다."),
+    AUTHORIZATION_ERROR(8002 , "접근 권한이 없거나 만료되었습니다.");
 
 
     private final int code;

@@ -1,4 +1,4 @@
-package faddy.backend.global.api.Dto;
+package faddy.backend.api.Dto;
 
 public class SingleResponseDto<T> {
     private T body;

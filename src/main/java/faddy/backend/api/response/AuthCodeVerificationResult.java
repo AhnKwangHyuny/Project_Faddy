@@ -1,4 +1,4 @@
-package faddy.backend.global.api.response;
+package faddy.backend.api.response;
 
 public class AuthCodeVerificationResult {
 

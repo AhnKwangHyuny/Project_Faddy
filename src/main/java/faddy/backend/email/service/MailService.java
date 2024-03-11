@@ -2,7 +2,7 @@ package faddy.backend.email.service;
 
 import faddy.backend.email.dto.AuthCodeMessage;
 import faddy.backend.global.Utils.RedisUtil;
-import faddy.backend.global.api.response.AuthCodeVerificationResult;
+import faddy.backend.api.response.AuthCodeVerificationResult;
 import faddy.backend.global.exception.BadRequestException;
 import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.ServerProcessingException;

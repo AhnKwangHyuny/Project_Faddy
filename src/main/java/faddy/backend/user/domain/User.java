@@ -3,10 +3,16 @@ package faddy.backend.user.domain;
 import faddy.backend.auth.domain.EmailVerifications;
 import faddy.backend.auth.domain.SocialLogin;
 import faddy.backend.global.BaseEntity;
+import faddy.backend.global.exception.AuthorizationException;
+import faddy.backend.global.exception.ExceptionCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
@@ -16,7 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "users")
 @NoArgsConstructor(access = PROTECTED)
 @SQLDelete(sql = "UPDATE member SET status = 'DELETED' WHERE id = ?")
-public class User extends BaseEntity {
+public class User extends BaseEntity  {
 
     public User(String username, String password, String nickname, String email) {
         this.username = username;
@@ -80,6 +86,14 @@ public class User extends BaseEntity {
         this.email = email;
     }
 
+    public User(String username, String password, String nickname, String email, Authority authority) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.email = email;
+        this.authority = authority;
+    }
+
     // test builder
     public static class Builder {
         private String username;
@@ -88,6 +102,8 @@ public class User extends BaseEntity {
         private String password;
 
         private String email;
+
+        private Authority authority;
 
         public Builder withUsername(String username) {
             this.username = username;
@@ -109,9 +125,18 @@ public class User extends BaseEntity {
             return this;
         }
 
+        public Builder withAuthority(String authority) {
+            try {
+                this.authority = Authority.valueOf(authority.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new AuthorizationException(ExceptionCode.AUTHENTICATION_ERROR);
+            }
+            return this;
+        }
+
 
         public User build() {
-            return new User(username, password , nickname, email);
+            return new User(username, password , nickname, email , authority );
         }
     }
 
