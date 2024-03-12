@@ -15,7 +15,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -39,6 +41,7 @@ public class WebSecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final EntryPointUnauthorizedHandler entryPointUnauthorizedHandler;
 
+    //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     public WebSecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil,
                              CustomAccessDeniedHandler customAccessDeniedHandler,
                              EntryPointUnauthorizedHandler entryPointUnauthorizedHandler) {
@@ -60,11 +63,9 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-                .exceptionHandling()
-                .accessDeniedHandler( customAccessDeniedHandler)
+        http.exceptionHandling()
+                .accessDeniedHandler(customAccessDeniedHandler)
                 .authenticationEntryPoint(entryPointUnauthorizedHandler);
-
 
         //csrf disable
         http
@@ -112,5 +113,6 @@ public class WebSecurityConfig {
         return http.build();
 
     }
+
 
 }

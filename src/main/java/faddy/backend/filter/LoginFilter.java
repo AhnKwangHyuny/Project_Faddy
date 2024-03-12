@@ -2,6 +2,7 @@ package faddy.backend.filter;
 
 import faddy.backend.auth.dto.CustomUserDetails;
 import faddy.backend.auth.jwt.Service.JwtUtil;
+import faddy.backend.global.exception.ExceptionCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,25 +39,28 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 토큰 검증을 위해 authenticationManager에 token 처리 위임
         return authenticationManager.authenticate(authToken);
+
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
 
         //UserDetailsS
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        try {
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        String username = customUserDetails.getUsername();
+            String username = customUserDetails.getUsername();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        String role = auth.getAuthority();
+            String token = jwtUtil.generateToken(username , authorities);
 
-        String token = jwtUtil.generateToken(username, role, 60*60*10L);
+            response.addHeader("Authorization", "Bearer " + token);
 
-        response.addHeader("Authorization", "Bearer " + token);
+        } catch (RuntimeException e) {
+            throw new faddy.backend.global.exception.AuthenticationException(ExceptionCode.AUTHENTICATION_ERROR);
+        }
+
     }
 
     @Override

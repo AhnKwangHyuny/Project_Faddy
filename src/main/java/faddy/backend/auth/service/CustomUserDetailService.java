@@ -4,6 +4,7 @@ package faddy.backend.auth.service;
 import faddy.backend.auth.dto.CustomUserDetails;
 import faddy.backend.user.domain.User;
 import faddy.backend.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class CustomUserDetailService implements UserDetailsService {
 
@@ -29,6 +30,8 @@ public class CustomUserDetailService implements UserDetailsService {
 
         if (user.isPresent()) {
             User userData = user.get();
+
+            log.info(userData.toString());
             return new CustomUserDetails(userData);
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);

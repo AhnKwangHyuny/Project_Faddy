@@ -1,5 +1,6 @@
 package faddy.backend.auth.jwt.Service;
 
+import faddy.backend.user.domain.Authority;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -19,14 +20,14 @@ import java.util.Collection;
 import java.util.Date;
 
 import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
-@PropertySource("spring")
+@PropertySource("classpath:application.yml")
 @Component
 public class JwtUtil {
 
     private final SecretKey SECRET_KEY;
     private final long EXPIRE_TIME;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret ,@Value("${jwt.token.expire-time}") long expireTime) {
+    public JwtUtil(@Value("${spring.jwt.secret}") String secret ,@Value("${spring.jwt.token.expire-time}") long expireTime) {
         SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         EXPIRE_TIME =expireTime;
     }
@@ -86,7 +87,7 @@ public class JwtUtil {
 
     private Date getExpireDate() {
         Date now = new Date();
-        return new Date(now.getTime() + EXPIRE_TIME);
+        return new Date(System.currentTimeMillis() + EXPIRE_TIME);
     }
 
     public String getUsername(String accessToken) {
@@ -104,6 +105,12 @@ public class JwtUtil {
                 .getBody()
                 .get("role", String.class);
 
+    }
+
+    public Authority getAuthority(String accessToken) {
+        String role = getRole(accessToken);
+
+        return Authority.valueOf(role);
     }
 
     public Boolean isExpired(String token) {

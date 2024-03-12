@@ -1,7 +1,6 @@
 package faddy.backend.auth.dto;
 
 import faddy.backend.user.domain.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

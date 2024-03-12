@@ -1,8 +1,10 @@
 package faddy.backend.user.presentation;
 
+import faddy.backend.auth.dto.LoginRequestDto;
 import faddy.backend.email.dto.EmailDto;
 import faddy.backend.email.service.MailService;
 import faddy.backend.api.Dto.ResponseDto;
+import faddy.backend.global.Utils.UserValidator;
 import faddy.backend.global.exception.BadRequestException;
 import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.ExceptionResponse;
@@ -122,9 +124,24 @@ public class UserController {
 
     @ApiOperation(value = "유저 로그인 유효성 검사" , notes = "로그인 요청 시, 아이디와 패스워드를 확인하고 토큰을 생성하여 반환")
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto> login( @RequestBody Map<String , String> user) {
+    public ResponseEntity<ResponseDto> login(@Valid @RequestBody LoginRequestDto loginInfo) {
 
+        String username = loginInfo.getUsernameOrEmail();
+        String password = loginInfo.getPassword();
 
+        // username password 값 유효성 검사
+        if(! UserValidator.isValidUsername(username) || !UserValidator.isValidPassword(password)) {
+
+            // 유효성 검사 실패 시 bad Request 요청
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ResponseDto.response(
+                            "400",
+                            "잘못된 로그인 정보입니다. 다시 입력바랍니다."
+                    )
+            );
+        }
+
+        return null;
     }
 
 
