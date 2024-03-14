@@ -25,7 +25,10 @@ spring:
   jwt:
     secret: ZmFkZHkgaXMgYmVzdCBmYXNoaW9uIHNoYXJlIGNvbW11bml0eSEgcGxheSB0aGUgbXVzaWMhIO2MqOuUlOuKlCDrsqDsiqTtirjslbwh
     token:
-      expire-time: 1800
+      access:
+        expire-time: 7200 #  2시간
+      refresh:
+        expire-time: 86400 # 24시간
 
 gmail:
   host: smtp.gmail.com

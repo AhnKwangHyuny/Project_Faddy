@@ -64,5 +64,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
+
+    @ExceptionHandler(JwtValidationException.class)
+    public ResponseEntity<ExceptionResponse> handleJwtValidationException(final JwtValidationException e) {
+        log.warn(e.getMessage(), e);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
 }
 

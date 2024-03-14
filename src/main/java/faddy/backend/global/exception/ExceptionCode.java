@@ -42,7 +42,12 @@ public enum ExceptionCode {
      * */
     INVALID_EMAIL_FORMAT(5003 , "유효하지 않은 이메일 형식입니다."),
 
-
+    /**
+     * JWT VALIDATION ERROR
+     * */
+    EXPIRED_JWT_TOKEN(7001, "만료된 JWT 토큰입니다."),
+    INVALID_JWT_TOKEN(7002 , "유효하지 않은 토큰입니다."),
+    INVALID_OR_EMPTY_JWT_TOKEN(7003, "유효하지 않거나 없는 JWT 토큰입니다."),
 
 
     /* @@@ server exception : 6000~   @@@@*/

@@ -1,35 +1,37 @@
 package faddy.backend.auth.jwt.Service;
 
-import faddy.backend.user.domain.Authority;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import faddy.backend.global.exception.ExceptionCode;
+import faddy.backend.global.exception.JwtValidationException;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Date;
-
-import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 @PropertySource("classpath:application.yml")
 @Component
 public class JwtUtil {
 
-    private final SecretKey SECRET_KEY;
-    private final long EXPIRE_TIME;
+    private final SecretKey key;
 
-    public JwtUtil(@Value("${spring.jwt.secret}") String secret , @Value("${spring.jwt.access.expire-time}") long expireTime) {
-        SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        EXPIRE_TIME =expireTime;
+    private final long ACCESS_TOKEN_EXPIRE_TIME;
+    private final long REFRESH_TOKEN_EXPIRE_TIME;
+
+    public JwtUtil(@Value("${spring.jwt.secret}") String secret ,
+                   @Value("${spring.jwt.access.expire-time}") long accessExpiredAt,
+                   @Value("${spring.jwt.access.expire-time}") long refreshExpiredAt) {
+
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+
+        ACCESS_TOKEN_EXPIRE_TIME = accessExpiredAt;
+        REFRESH_TOKEN_EXPIRE_TIME = refreshExpiredAt;
     }
 
     /**
@@ -38,21 +40,13 @@ public class JwtUtil {
      * @param authorities
      * @return JWT(String)
      */
-    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("role", authorities.stream().findFirst().get().toString())
-                .setExpiration(getExpireDate(EXPIRE_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
-    }
 
-    public String generateToken(String username, Long expire_time , Collection<? extends GrantedAuthority> authorities) {
+
+    public String generate(String subject, Date expiredAt) {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("role", authorities.stream().findFirst().get().toString())
-                .setExpiration(getExpireDate(expire_time))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setSubject(subject)
+                .setExpiration(expiredAt)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -64,7 +58,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(key ,SignatureAlgorithm.HS256 )
                 .compact();
     }
 
@@ -79,32 +73,29 @@ public class JwtUtil {
     }
 
 
-    /**
-     * 토큰으로부터 받은 정보를 기반으로 Authentication 객체를 반환하는 메소드.
-     * @param accessToken
-     * @return Authentication
-     */
-    public Authentication getAuthentication(String accessToken) {
-        return new UsernamePasswordAuthenticationToken(getUsername(accessToken), "", createAuthorityList(getRole(accessToken)));
-    }
 
-    public boolean validateToken(String accessToken) {
-        if (accessToken == null) {
-            return false;
-        }
-
+    public boolean validateToken(String token) {
         try {
-            return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(accessToken)
-                .getBody()
-                .getExpiration()
-                .after(new Date());
-        }
-        catch (Exception e) {
-            return false;
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+
+            if (claims.getBody().getExpiration().before(new Date())) {
+                return false;
+            }
+
+            String username = claims.getBody().getSubject();
+            if (username == null || username.isEmpty()) {
+                return false;
+            }
+
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtValidationException(ExceptionCode.INVALID_JWT_TOKEN);
         }
     }
+
 
     private Date getExpireDate(Long expireTime) {
         Date now = new Date();
@@ -113,29 +104,15 @@ public class JwtUtil {
 
     public String getUsername(String accessToken) {
         return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(key)
                 .parseClaimsJws(accessToken)
                 .getBody()
                 .getSubject();
     }
 
-    public String getRole(String accessToken) {
-        return (String) Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(accessToken)
-                .getBody()
-                .get("role", String.class);
-
-    }
-
-    public Authority getAuthority(String accessToken) {
-        String role = getRole(accessToken);
-
-        return Authority.valueOf(role);
-    }
 
     public Boolean isExpired(String token) {
-        Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
+        Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         return claimsJws.getBody().getExpiration().before(new Date());
     }
 

@@ -56,7 +56,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         //토큰에서 username과 role 획득
         String username = jwtUtil.getUsername(token);
-        String authority = jwtUtil.getRole(token);
 
 
         //userEntity를 생성하여 값 set
@@ -65,7 +64,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 .withEmail("mock.naver.com")
                 .withPassword("")
                 .withUsername(username)
-                .withAuthority(authority).build();
+                .build();
 
         CustomUserDetails userDetails = new CustomUserDetails(userEntity);
 

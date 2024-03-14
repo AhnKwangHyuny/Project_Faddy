@@ -26,7 +26,7 @@ spring:
     secret: ZmFkZHkgaXMgYmVzdCBmYXNoaW9uIHNoYXJlIGNvbW11bml0eSEgcGxheSB0aGUgbXVzaWMhIO2MqOuUlOuKlCDrsqDsiqTtirjslbwh
     token:
       access:
-        expire-time: 1800 # 30분
+        expire-time: 7200 #  2시간
       refresh:
         expire-time: 86400 # 24시간
 
