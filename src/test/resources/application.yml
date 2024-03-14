@@ -1,0 +1,71 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      dd6l-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    defer-datasource-initialization: true
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+  security:
+    user:
+      name: user
+      password: 1234
+
+  #redis metadata
+  redis:
+    host: localhost
+    port: 6379
+
+  jwt:
+    secret: ZmFkZHkgaXMgYmVzdCBmYXNoaW9uIHNoYXJlIGNvbW11bml0eSEgcGxheSB0aGUgbXVzaWMhIO2MqOuUlOuKlCDrsqDsiqTtirjslbwh
+    token:
+      expire-time: 1800 # 4시간
+
+
+gmail:
+  host: smtp.gmail.com
+  port: 587
+  username: agh0314@gmail.com
+  password: fxxovgvpalqutsuq
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+        connectiontimeout: 5000
+        timeout: 5000
+        writetimeout: 5000
+      ssl:
+        trust: smtp.gmail.com
+        protocols: TLSv1.2
+  auth-code-expiration-millis: 180000  # 3분
+
+naver:
+  host: smtp.naver.com
+  port: 465
+  username: agh0314
+  password: agh@p970314
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+        ssl:
+          trust: smtp.naver.com
+          protocols: TLSv1.2
