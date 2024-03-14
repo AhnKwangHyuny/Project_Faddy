@@ -1,15 +1,15 @@
 package faddy.backend.auth.jwt.Service;
 
+import faddy.backend.auth.repository.TokenBlackListRepository;
 import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.JwtValidationException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,6 +17,9 @@ import java.util.Date;
 @PropertySource("classpath:application.yml")
 @Component
 public class JwtUtil {
+
+    @Autowired
+    private final TokenBlackListRepository tokenBlackListRepository;
 
     private final SecretKey key;
 
@@ -114,6 +117,12 @@ public class JwtUtil {
     public Boolean isExpired(String token) {
         Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         return claimsJws.getBody().getExpiration().before(new Date());
+    }
+
+
+    // refresh token이 server db에 존재하는지 확인
+    public boolean existsByInvalidRefreshToken(String refreshToken) {
+        return findByInvalidRefreshToken(refreshToken).isPresent();
     }
 
 }
