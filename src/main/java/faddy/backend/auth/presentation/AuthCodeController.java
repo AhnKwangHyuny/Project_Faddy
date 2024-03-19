@@ -1,6 +1,5 @@
 package faddy.backend.auth.presentation;
 
-import faddy.backend.auth.jwt.Service.TokenProvider;
 import faddy.backend.email.service.MailService;
 import faddy.backend.global.Utils.RedisUtil;
 import faddy.backend.api.Dto.ResponseDto;
@@ -31,7 +30,6 @@ public class AuthCodeController {
 
     private final MailService mailService;
     private final RedisUtil redisUtil;
-    private final TokenProvider tokenProvider;
 
     private final String BEARER = "Bearer ";
     private final String AUTHENTICATION = "Authentication" ;
@@ -54,7 +52,6 @@ public class AuthCodeController {
                 claims.put("email", email);
 
                 // jwt 인증 토큰 생성
-                token = tokenProvider.generateToken("emailAuthentication", TokenProvider.USER_JOIN_EXPIRE_TIME, claims);
 
             }
 

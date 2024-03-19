@@ -1,28 +1,32 @@
 package faddy.backend.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import faddy.backend.auth.api.response.AuthTokensResponse;
 import faddy.backend.auth.dto.CustomUserDetails;
 import faddy.backend.auth.dto.LoginRequestDto;
 import faddy.backend.auth.jwt.Service.JwtUtil;
-import faddy.backend.global.exception.ExceptionCode;
+import faddy.backend.auth.service.AuthTokensGenerator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @PropertySource("classpath:application.yml")
@@ -30,77 +34,69 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-
+    private final AuthTokensGenerator authTokensGenerator;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${spring.jwt.access.expire-time}")
-    private Long ACCESS_EXPIRE_TIME;
-
-    @Value("${spring.jwt.refresh.expire-time}")
-    private Long REFRESH_EXPIRE_TIME;
-
-    public LoginFilter(AuthenticationManager authenticationManager , JwtUtil jwtUtil ) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, AuthTokensGenerator authTokensGenerator) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-
-        setFilterProcessesUrl("/api/v1/users/login");
+        this.authTokensGenerator = authTokensGenerator;
     }
+
+    @Value("${spring.jwt.token.access.expire-time}")
+    private Long ACCESS_EXPIRE_TIME;
+
+    @Value("${spring.jwt.token.refresh.expire-time}")
+    private Long REFRESH_EXPIRE_TIME;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        LoginRequestDto loginRequestDto;
 
-        log.info("execute login Filter");
-
-        //클라이언트 요청에서 user id , password 추출
-        LoginRequestDto loginRequestDto = null;
         try {
             loginRequestDto = objectMapper.readValue(request.getInputStream(), LoginRequestDto.class);
         } catch (IOException e) {
-            try {
-                unsuccessfulAuthentication(request, response, new AuthenticationServiceException(e.getMessage()));
-            } catch (IOException | ServletException ex) {
-                throw new RuntimeException(ex);
-            }
-            return null;
+            throw new AuthenticationServiceException("Failed to parse login request", e);
         }
 
-        String username = loginRequestDto.getUsernameOrEmail();
-        String password = loginRequestDto.getPassword();
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword());
 
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username , password , null);
-
-        // 토큰 검증을 위해 authenticationManager에 token 처리 위임
         return authenticationManager.authenticate(authToken);
-
     }
 
+
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        //UserDetailsS
-        try {
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String username = customUserDetails.getUsername();
 
-            String username = customUserDetails.getUsername();
-
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-            GrantedAuthority auth = iterator.next();
-            String role = auth.getAuthority();
-
-            String access = jwtUtil.createJwt("access", username, role, ACCESS_EXPIRE_TIME);
-            String refresh = jwtUtil.createJwt("refresh", username, role, REFRESH_EXPIRE_TIME);
-
-            //응답 설
-
-            log.info("access is : " + access  + "refresh is " + refresh);
-
-            response.addHeader("Authorization", "Bearer " + access);
-
-
-        } catch (RuntimeException e) {
-            throw new faddy.backend.global.exception.AuthenticationException(ExceptionCode.AUTHENTICATION_ERROR);
+        if (username.isEmpty()) {
+            sendErrorResponse(request, response, "Username cannot be empty", HttpStatus.BAD_REQUEST);
+            return;
         }
 
+        AuthTokensResponse tokenResponse = authTokensGenerator.generate(username);
+        // 클라이언트에 토큰 발급
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.OK.value());
+        response.getWriter().write(objectMapper.writeValueAsString(tokenResponse));
+        response.getWriter().flush();
+
+        log.info("Access token: {}, Refresh token: {}", tokenResponse.getAccessToken(), tokenResponse.getRefreshToken());
+    }
+
+    private void sendErrorResponse(HttpServletRequest request, HttpServletResponse response, String errorMessage, HttpStatus status) throws IOException {
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("timestamp", LocalDateTime.now());
+        errorDetails.put("status", status.value());
+        errorDetails.put("error", status.getReasonPhrase());
+        errorDetails.put("message", errorMessage);
+        errorDetails.put("path", request.getRequestURI());
+
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(errorDetails));
     }
 
     @Override

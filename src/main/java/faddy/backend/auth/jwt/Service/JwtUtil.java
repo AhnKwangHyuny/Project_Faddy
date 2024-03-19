@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-@PropertySource("classpath:application.yml")
+
 @Component
 public class JwtUtil {
 
     @Autowired
-    private final TokenBlackListRepository tokenBlackListRepository;
+    private TokenBlackListRepository tokenBlackListRepository;
 
     private final SecretKey key;
 
@@ -27,8 +27,9 @@ public class JwtUtil {
     private final long REFRESH_TOKEN_EXPIRE_TIME;
 
     public JwtUtil(@Value("${spring.jwt.secret}") String secret ,
-                   @Value("${spring.jwt.access.expire-time}") long accessExpiredAt,
-                   @Value("${spring.jwt.access.expire-time}") long refreshExpiredAt) {
+                   @Value("${spring.jwt.token.access.expire-time}") long accessExpiredAt,
+                   @Value("${spring.jwt.token.refresh.expire-time}") long refreshExpiredAt) {
+
 
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -37,23 +38,26 @@ public class JwtUtil {
         REFRESH_TOKEN_EXPIRE_TIME = refreshExpiredAt;
     }
 
-    /**
-     * Username 및 Authorities 기반 토큰 생성 메소드.
-     * @param username
-     * @param authorities
-     * @return JWT(String)
-     */
 
+    public String generate(String username, Date expiredAt) {
 
-    public String generate(String subject, Date expiredAt) {
-        return Jwts.builder()
-                .setSubject(subject)
+        String token = Jwts.builder()
+                .setSubject( username)
                 .setExpiration(expiredAt)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return Jwts.builder()
+                .setSubject( username)
+                .setExpiration(expiredAt)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String createJwt(String category, String username, String role, Long expiredMs) {
+
 
         return Jwts.builder()
                 .claim("category", category)
@@ -79,7 +83,7 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder()
+            Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
@@ -108,6 +112,7 @@ public class JwtUtil {
     public String getUsername(String accessToken) {
         return Jwts.parser()
                 .setSigningKey(key)
+                .build()
                 .parseClaimsJws(accessToken)
                 .getBody()
                 .getSubject();
@@ -115,14 +120,9 @@ public class JwtUtil {
 
 
     public Boolean isExpired(String token) {
-        Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
         return claimsJws.getBody().getExpiration().before(new Date());
     }
 
-
-    // refresh token이 server db에 존재하는지 확인
-    public boolean existsByInvalidRefreshToken(String refreshToken) {
-        return findByInvalidRefreshToken(refreshToken).isPresent();
-    }
 
 }

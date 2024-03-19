@@ -126,11 +126,11 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<ResponseDto> login(@Valid @RequestBody LoginRequestDto loginInfo) {
 
-        String username = loginInfo.getUsernameOrEmail();
+        String username = loginInfo.getUsername();
         String password = loginInfo.getPassword();
 
         // username password 값 유효성 검사
-        if(! UserValidator.isValidUsername(username) || !UserValidator.isValidPassword(password)) {
+        if(!UserValidator.isValidUsername(username) || !UserValidator.isValidPassword(password)) {
 
             // 유효성 검사 실패 시 bad Request 요청
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(

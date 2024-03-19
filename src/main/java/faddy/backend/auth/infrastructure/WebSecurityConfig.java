@@ -3,6 +3,7 @@ package faddy.backend.auth.infrastructure;
 import faddy.backend.auth.handler.CustomAccessDeniedHandler;
 import faddy.backend.auth.handler.EntryPointUnauthorizedHandler;
 import faddy.backend.auth.jwt.Service.JwtUtil;
+import faddy.backend.auth.service.AuthTokensGenerator;
 import faddy.backend.filter.JwtFilter;
 import faddy.backend.filter.LoginFilter;
 import org.springframework.context.annotation.Bean;
@@ -39,15 +40,19 @@ public class WebSecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final EntryPointUnauthorizedHandler entryPointUnauthorizedHandler;
 
+    private final AuthTokensGenerator authTokensGenerator;
+
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     public WebSecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil,
                              CustomAccessDeniedHandler customAccessDeniedHandler,
-                             EntryPointUnauthorizedHandler entryPointUnauthorizedHandler) {
+                             EntryPointUnauthorizedHandler entryPointUnauthorizedHandler,
+                             AuthTokensGenerator authTokensGenerator) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.entryPointUnauthorizedHandler = entryPointUnauthorizedHandler;
+        this.authTokensGenerator = authTokensGenerator;
     }
 
     //AuthenticationManager Bean 등록
@@ -58,8 +63,13 @@ public class WebSecurityConfig {
     }
 
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, authTokensGenerator);
+        loginFilter.setFilterProcessesUrl("/api/v1/users/login"); // 로그인 요청을 처리할 URL 설정
+
 
         http.exceptionHandling()
                 .accessDeniedHandler(customAccessDeniedHandler)
@@ -91,17 +101,8 @@ public class WebSecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
 
-        // 필터 설정
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/users/login", "/login").permitAll()
-                        //다른 경로 권한설정
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(new JwtFilter(jwtUtil) , LoginFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration) , jwtUtil),
-                        UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
+            .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         //세션 설정
         http

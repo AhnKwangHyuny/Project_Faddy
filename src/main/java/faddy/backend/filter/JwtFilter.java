@@ -2,12 +2,14 @@ package faddy.backend.filter;
 
 import faddy.backend.auth.dto.CustomUserDetails;
 import faddy.backend.auth.jwt.Service.JwtUtil;
+import faddy.backend.auth.jwt.Service.TokenBlackListService;
 import faddy.backend.user.domain.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,8 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    @Autowired
+    private TokenBlackListService tokenBlackListService;
 
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -32,8 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-
-            log.warn("token null");
+            // 최초 로그인
             filterChain.doFilter(request, response);
 
             return;

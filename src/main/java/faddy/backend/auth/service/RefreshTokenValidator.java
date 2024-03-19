@@ -1,5 +1,8 @@
 package faddy.backend.auth.service;
 
+import faddy.backend.auth.repository.TokenBlackListRepository;
+import faddy.backend.global.exception.AuthorizationException;
+import faddy.backend.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -8,24 +11,18 @@ import org.springframework.stereotype.Component;
 public class RefreshTokenValidator {
 
     private final AuthTokensGenerator authTokensGenerator;
-    private final BlackListRepository blackListRepository;
+    private final TokenBlackListRepository tokenBlackListRepository;
 
     public void validateToken(String refreshToken) {
         if (!authTokensGenerator.isValidToken(refreshToken)) {
-            throw new UnAuthorizationException("[ERROR] 유효하지 않은 Refresh Token입니다!");
+            throw new AuthorizationException(ExceptionCode.INVALID_REFRESH_TOKEN);
         }
     }
 
-    public void validateTokenOwnerId(String refreshToken, Long id) {
-        final Long ownerId = authTokensGenerator.extractMemberId(refreshToken);
-        if (!ownerId.equals(id)) {
-            throw new UnAuthorizationException("[ERROR] 로그인한 사용자의 Refresh Token이 아닙니다!");
-        }
-    }
-
-    public void validateLogoutToken(String refreshToken) {
-        if (blackListRepository.existsByInvalidRefreshToken(refreshToken)) {
-            throw new UnAuthorizationException("[ERROR] 이미 로그아웃된 사용자입니다!");
+    public void validateTokenOwnerUsername(String refreshToken, String username) {
+        final String ownerUsername = authTokensGenerator.extractUsername(refreshToken);
+        if (!ownerUsername.equals(username)) {
+            throw new AuthorizationException(ExceptionCode.TOKEN_OWNER_MISMATCH);
         }
     }
 }

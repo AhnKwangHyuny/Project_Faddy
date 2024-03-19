@@ -1,23 +1,24 @@
 package faddy.backend.jwt.util;
 
 import faddy.backend.auth.api.response.AuthTokensResponse;
-import faddy.backend.auth.jwt.Service.JwtUtil;
 import faddy.backend.auth.service.AuthTokensGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2, replace = AutoConfigureTestDatabase.Replace.ANY)
+@SpringBootTest
 class AuthTokensGeneratorTest {
 
-    @Mock
-    private JwtUtil jwtUtil;
 
-    @InjectMocks
+    @Autowired
     private AuthTokensGenerator authTokensGenerator;
 
     @BeforeEach
@@ -25,48 +26,22 @@ class AuthTokensGeneratorTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void generate() {
-        // Given
-        String username = "testUser";
-        String mockToken = "mockToken";
-        when(jwtUtil.generate(anyString(), any())).thenReturn(mockToken);
 
-        // When
+    @Test
+    void 다중_토큰_응답_생성_테스트() {
+        // given
+        String username = "testUser";
+
+        // when
         AuthTokensResponse tokens = authTokensGenerator.generate(username);
+        String accessToken = tokens.getAccessToken();
+        String refreshToken = tokens.getRefreshToken();
 
-        System.out.println("tokens = " + tokens.toString());
+        System.out.println(tokens.toString());
 
-        // Then
-        assertNotNull(tokens);
-        assertEquals(mockToken, tokens.getAccessToken());
-        assertEquals(mockToken, tokens.getRefreshToken());
-    }
-
-    @Test
-    void isValidToken() {
-        // Given
-        String token = "validToken";
-        when(jwtUtil.validateToken(token)).thenReturn(true);
-
-        // When
-        boolean isValid = authTokensGenerator.isValidToken(token);
-
-        // Then
-        assertTrue(isValid);
-    }
-
-    @Test
-    void extractUsername() {
-        // Given
-        String token = "validToken";
-        String username = "testUser";
-        when(jwtUtil.getUsername(token)).thenReturn(username);
-
-        // When
-        String extractedUsername = authTokensGenerator.extractUsername(token);
-
-        // Then
-        assertEquals(username, extractedUsername);
+        //then
+        assertTrue(authTokensGenerator.isValidToken(accessToken), "생성된 Access Token이 유효해야 합니다.");
+        assertTrue(authTokensGenerator.isValidToken(refreshToken), "생성된 Refresh Token이 유효해야 합니다.");
+        assertEquals(username, authTokensGenerator.extractUsername(accessToken), "Access Token에서 추출한 사용자 이름이 일치해야 합니다.");
     }
 }

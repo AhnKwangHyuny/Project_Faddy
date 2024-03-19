@@ -10,4 +10,9 @@ import java.util.Optional;
 public interface TokenBlackListRepository extends JpaRepository<TokenBlackList , Long> {
 
     Optional<TokenBlackList> findByInvalidRefreshToken(String refreshToken);
+
+    default boolean existsByRefreshToken(String refreshToken) {
+        return findByInvalidRefreshToken(refreshToken).isPresent();
+    }
+
 }

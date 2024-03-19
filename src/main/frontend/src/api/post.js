@@ -1,12 +1,17 @@
-import { END_POINTS } from 'constants/api';
+import { END_POINTS ,   AXIOS_BASE_URL } from 'constants/api';
 
 import {userRequestInstance} from 'api/axiosInstance';
 
 export const postUserLogin = async({username, password}) => {
 
-    const formData = new FormData();
-    formData.append('username' , username);
-    formData.append('password' , password);
+    console.log(AXIOS_BASE_URL);
 
-    return await userRequestInstance.post(END_POINTS.LOGIN , formData);
+    const data = {
+            username: username,
+            password: password
+        };
+
+
+    return await userRequestInstance.post(END_POINTS.LOGIN , data);
 }
+

@@ -5,7 +5,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import {ValidateUsername , ValidatePassword} from 'utils/Validate';
 import { useNavigate } from 'react-router-dom';
-import {postUserLogin} from 'api/post';
+import {postUserLogin , setAccessToken} from 'api/post';
+
 
 
 
@@ -38,6 +39,9 @@ function LoginForm() {
 
     result.then((response) => {
       console.log(response);
+
+//      localStorage.setItem('authorization' , respo)
+
     })
     .catch((error) => {
       console.log(error);

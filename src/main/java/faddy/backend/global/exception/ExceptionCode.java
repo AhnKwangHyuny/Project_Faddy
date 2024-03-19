@@ -47,7 +47,9 @@ public enum ExceptionCode {
      * */
     EXPIRED_JWT_TOKEN(7001, "만료된 JWT 토큰입니다."),
     INVALID_JWT_TOKEN(7002 , "유효하지 않은 토큰입니다."),
-    INVALID_OR_EMPTY_JWT_TOKEN(7003, "유효하지 않거나 없는 JWT 토큰입니다."),
+    INVALID_REFRESH_TOKEN(7003 , "[ERROR] 유효하지 않은 Refresh Token입니다!"),
+    INVALID_OR_EMPTY_JWT_TOKEN(7004, "유효하지 않거나 없는 JWT 토큰입니다."),
+    TOKEN_OWNER_MISMATCH(7005, "[ERROR] 로그인한 사용자의 Refresh Token이 아닙니다!"),
 
 
     /* @@@ server exception : 6000~   @@@@*/

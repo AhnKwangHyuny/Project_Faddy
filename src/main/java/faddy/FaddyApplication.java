@@ -12,6 +12,7 @@ public class FaddyApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(FaddyApplication.class, args);
+
     }
 
 
