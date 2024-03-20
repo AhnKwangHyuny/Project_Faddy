@@ -62,7 +62,7 @@ public class JwtTest {
 
         //Given
         LoginRequestDto loginRequestDto = new LoginRequestDto();
-        loginRequestDto.setUsernameOrEmail(testUser.getUsername());
+        loginRequestDto.setUsername(testUser.getUsername());
         loginRequestDto.setPassword("agh@p970314");
 
         ObjectMapper objectMapper = new ObjectMapper();

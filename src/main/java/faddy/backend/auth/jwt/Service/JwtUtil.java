@@ -1,5 +1,7 @@
 package faddy.backend.auth.jwt.Service;
 
+import faddy.backend.auth.jwt.infrastruture.CustomDeserializer;
+import faddy.backend.auth.jwt.infrastruture.CustomSerializer;
 import faddy.backend.auth.repository.TokenBlackListRepository;
 import faddy.backend.global.exception.ExceptionCode;
 import faddy.backend.global.exception.JwtValidationException;
@@ -9,7 +11,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -21,7 +22,14 @@ public class JwtUtil {
     @Autowired
     private TokenBlackListRepository tokenBlackListRepository;
 
+    @Autowired
+    private CustomSerializer serializer;
+
+    @Autowired
+    private CustomDeserializer deserializer;
+
     private final SecretKey key;
+
 
     private final long ACCESS_TOKEN_EXPIRE_TIME;
     private final long REFRESH_TOKEN_EXPIRE_TIME;
@@ -42,6 +50,7 @@ public class JwtUtil {
     public String generate(String subject, Date expiredAt) {
 
         String token = Jwts.builder()
+                .json(serializer)
                 .setSubject( subject)
                 .setExpiration(expiredAt)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -49,6 +58,7 @@ public class JwtUtil {
                 .compact();
 
         return Jwts.builder()
+                .json(serializer)
                 .setSubject(subject)
                 .setExpiration(expiredAt)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -84,6 +94,7 @@ public class JwtUtil {
         try {
             Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(key)
+                    .deserializeJsonWith(deserializer)
                     .build()
                     .parseClaimsJws(token);
 
@@ -111,6 +122,7 @@ public class JwtUtil {
     public String getUsername(String accessToken) {
         return Jwts.parser()
                 .setSigningKey(key)
+                .deserializeJsonWith(deserializer)
                 .build()
                 .parseClaimsJws(accessToken)
                 .getBody()
@@ -119,7 +131,11 @@ public class JwtUtil {
 
 
     public Boolean isExpired(String token) {
-        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
+        Jws<Claims> claimsJws = Jwts.parser()
+                .setSigningKey(key)
+                .deserializeJsonWith(deserializer)
+                .build()
+                .parseClaimsJws(token);
         return claimsJws.getBody().getExpiration().before(new Date());
     }
 

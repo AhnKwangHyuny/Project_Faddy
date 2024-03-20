@@ -18,20 +18,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 @Slf4j
-@Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    @Autowired
-    private TokenBlackListService tokenBlackListService;
 
-    public JwtFilter(JwtUtil jwtUtil) {
+    private final TokenBlackListService tokenBlackListService;
+
+    public JwtFilter(JwtUtil jwtUtil, TokenBlackListService tokenBlackListService) {
         this.jwtUtil = jwtUtil;
+        this.tokenBlackListService = tokenBlackListService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Request에서 Authorization 헤더를 찾음
+        log.info("execute jwtFilter");
         String authorization = request.getHeader("Authorization");
 
         // Authorization 헤더 검증

@@ -3,6 +3,7 @@ package faddy.backend.auth.infrastructure;
 import faddy.backend.auth.handler.CustomAccessDeniedHandler;
 import faddy.backend.auth.handler.EntryPointUnauthorizedHandler;
 import faddy.backend.auth.jwt.Service.JwtUtil;
+import faddy.backend.auth.jwt.Service.TokenBlackListService;
 import faddy.backend.auth.service.AuthTokensGenerator;
 import faddy.backend.filter.JwtFilter;
 import faddy.backend.filter.LoginFilter;
@@ -40,18 +41,21 @@ public class WebSecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final EntryPointUnauthorizedHandler entryPointUnauthorizedHandler;
 
+    private final TokenBlackListService tokenBlackListService;
+
     private final AuthTokensGenerator authTokensGenerator;
 
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     public WebSecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil,
                              CustomAccessDeniedHandler customAccessDeniedHandler,
-                             EntryPointUnauthorizedHandler entryPointUnauthorizedHandler,
+                             EntryPointUnauthorizedHandler entryPointUnauthorizedHandler, TokenBlackListService tokenBlackListService,
                              AuthTokensGenerator authTokensGenerator) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.entryPointUnauthorizedHandler = entryPointUnauthorizedHandler;
+        this.tokenBlackListService = tokenBlackListService;
         this.authTokensGenerator = authTokensGenerator;
     }
 
@@ -102,7 +106,7 @@ public class WebSecurityConfig {
 
 
         http
-                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
+                .addFilterBefore(new JwtFilter(jwtUtil ,tokenBlackListService ) , LoginFilter.class)
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         //세션 설정
