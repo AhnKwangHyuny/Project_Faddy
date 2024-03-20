@@ -1,5 +1,6 @@
 package faddy.backend.auth.presentation;
 
+import faddy.backend.auth.jwt.Service.JwtUtil;
 import faddy.backend.email.service.MailService;
 import faddy.backend.global.Utils.RedisUtil;
 import faddy.backend.api.Dto.ResponseDto;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,13 +32,17 @@ public class AuthCodeController {
 
     private final MailService mailService;
     private final RedisUtil redisUtil;
+    private final JwtUtil jwtUtil;
 
     private final String BEARER = "Bearer ";
     private final String AUTHENTICATION = "Authentication" ;
 
-    @ApiOperation(value = "인증 코드 검증", notes = "이 API 엔드포인트는 사용자가 제공한 인증 코드를 검증 후 유효하면 인증토큰을 생성해 딜리버리 한다.")
+    private final long SIGNUP_TOKEN_EXPIRE_TIME = 30 * 60 * 1000; // 30분
+
+
+    @ApiOperation(value = "인증 코드 검증", notes = "이 API 엔드포인트는 사용자가 제공한 이메일 인증 코드를 검증 후 유효하면 인증토큰을 생성해 딜리버리 한다.")
     @PostMapping("/verify")
-    public ResponseEntity verifyAuthCode(@RequestBody @Valid AuthCodeAndEmailDto request , HttpServletResponse response) throws NoSuchAlgorithmException {
+    public ResponseEntity verifyEmailAuthCode(@RequestBody @Valid AuthCodeAndEmailDto request , HttpServletResponse response) throws NoSuchAlgorithmException {
 
         String email = request.getEmail();
         String code = request.getCode();
@@ -52,6 +58,10 @@ public class AuthCodeController {
                 claims.put("email", email);
 
                 // jwt 인증 토큰 생성
+                final long now = System.currentTimeMillis();
+                Date expiredAt = new Date(now + SIGNUP_TOKEN_EXPIRE_TIME);
+
+                token = jwtUtil.generate(email, expiredAt);
 
             }
 

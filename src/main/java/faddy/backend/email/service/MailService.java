@@ -179,7 +179,7 @@ public class MailService {
      */
     public String createCode() throws NoSuchAlgorithmException {
 
-        int length = 6;
+        final int length = 6;
 
         try {
             Random random = SecureRandom.getInstanceStrong();
@@ -262,7 +262,7 @@ public class MailService {
         // redis에서 중복확인
         checkDuplicationByRedis(email);
 
-        // mysql에서 중복 확인
+        // mysql에서 중복 f
         checkDuplicationByDB(email);
 
     }

@@ -101,8 +101,9 @@ public class WebSecurityConfig {
                 .httpBasic((auth) -> auth.disable());
 
 
-        http.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
-            .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class)
+                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         //세션 설정
         http

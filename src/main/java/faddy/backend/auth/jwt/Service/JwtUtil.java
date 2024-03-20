@@ -39,17 +39,17 @@ public class JwtUtil {
     }
 
 
-    public String generate(String username, Date expiredAt) {
+    public String generate(String subject, Date expiredAt) {
 
         String token = Jwts.builder()
-                .setSubject( username)
+                .setSubject( subject)
                 .setExpiration(expiredAt)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         return Jwts.builder()
-                .setSubject( username)
+                .setSubject(subject)
                 .setExpiration(expiredAt)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -57,7 +57,6 @@ public class JwtUtil {
     }
 
     public String createJwt(String category, String username, String role, Long expiredMs) {
-
 
         return Jwts.builder()
                 .claim("category", category)
