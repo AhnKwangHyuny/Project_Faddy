@@ -53,9 +53,11 @@ function IdInputForm() {
      })
      .catch((err) => {
 
-        setIdError(err.data.responseMessage);
 
-        setIsIdDuplicated(true);
+        setIdError(err.response.data.message);
+        setIdMessage("");
+
+        setIsIdAvailable(false);
      });
 
 
@@ -78,7 +80,7 @@ function IdInputForm() {
 
     })
     .catch(function(error) {
-        console.log(error);
+
         setIdError("요청 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
 
     })

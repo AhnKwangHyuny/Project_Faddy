@@ -18,8 +18,8 @@ function NicknameInputForm() {
 
   useEffect(() => {
     if (!username || !password || !email) {
-      alert("잘못된 접근입니다.");
-      navigate('/signup/email/verifications');
+      alert("누락된 회원 정보가 존재합니다.");
+      navigate('/signup/passoword');
     }
   }, [username, password, email, navigate]);
 

@@ -22,7 +22,7 @@ public enum ExceptionCode {
      * @Return User info request exception : 4000~ 5000
      * */
     INVALID_INPUT_DATA(4001 , "유효하지 않은 데이터입니다."),
-    DUPLICATED_INPUT_DATA(4002 , "이미 사용 중인 데이터 입니다. (중복)"),
+    DUPLICATED_INPUT_DATA(4002 , "이미 사용 중인 데이터 입니다."),
 
     INVALID_USER_ID (4003 , "유효하지 않은 아이디 입니다. "),
     DUPLICATED_USER_ID(4004 , "이미 사용 중인 아이디가 존재합니다."),

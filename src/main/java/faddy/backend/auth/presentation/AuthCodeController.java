@@ -52,10 +52,6 @@ public class AuthCodeController {
 
         try {
             if(result.getResult()) {
-                // 인증 성공 시 인증 토큰 생성 (인증 유효시간 3분 15초)
-
-                Map<String, Object> claims = new HashMap<>();
-                claims.put("email", email);
 
                 // jwt 인증 토큰 생성
                 final long now = System.currentTimeMillis();

@@ -109,7 +109,7 @@ public class UserController {
         }
 
         if(userService.isUserIdDuplicated(field , value)) {
-            throw new BadRequestException(ExceptionCode.DUPLICATED_INPUT_DATA);
+            throw new BadRequestException(ExceptionCode.DUPLICATED_USER_ID);
         }
 
 
