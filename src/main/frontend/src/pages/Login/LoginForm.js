@@ -1,6 +1,8 @@
 import React, { useState , useContext , useRef } from 'react';
 import * as Style from "Common/SignUpStyle";
 
+import MainMenuBar from "widgets/MainMenuBar/MainMenuBar";
+
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import {ValidateUsername , ValidatePassword} from 'utils/Validate';

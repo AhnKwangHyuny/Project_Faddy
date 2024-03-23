@@ -9,11 +9,11 @@ export const API_AUTH = '/api/v1/auth';
 export const API_AUTH_CODE = '/api/v1/auth-codes'
 
 export const BASE_URL = DEV
-  ? DEVICE ? 'http://localhost:9000' : 'http://172.30.1.58:9000'
+  ? DEVICE ? 'http://localhost:9000' : 'http://172.30.1.97:9000'
   : `${window.location.protocol};//${process.env.AXIOS_PROD_BASE_URL}`
 
 export const AXIOS_BASE_URL = DEV
-  ? DEVICE ? 'http://172.30.1.58:9000' : 'http://localhost:9000'
+  ? DEVICE ? 'http://172.30.1.97:9000' : 'http://localhost:9000'
   : `${window.location.protocol};//${process.env.AXIOS_PROD_BASE_URL}`
 
 

@@ -23,6 +23,7 @@ const StyledButton = ({ children, style }) => (
 // 메인 컴포넌트
 function OnTheBoard(props) {
   return (
+    <>
     <div css={boxStyle}>
       <div css={divStyle}>
         <Image srcSet="..." />
@@ -34,7 +35,7 @@ function OnTheBoard(props) {
             공유 하세요.
           </div>
 
-          <StyledButton style={div5Style}>메인으로</StyledButton>
+          <StyledButton style={div5Style}><Link to = "/styleShare">메인으로</Link></StyledButton>
           <StyledButton style={div6Style}><Link to = "/login">로그인</Link></StyledButton>
 
 
@@ -50,6 +51,7 @@ function OnTheBoard(props) {
         </div>
       </div>
     </div>
+  </>
   );
 }
 
